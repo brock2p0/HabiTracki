@@ -1,15 +1,14 @@
 import React from 'react';
-import { Moon, TrendingUp } from 'lucide-react';
+import { Moon } from 'lucide-react';
+import type { DayData } from '../types';
 
 interface SleepTrackerProps {
-  currentDate: Date;
   daysInMonth: number;
-  getDayData: (day: number) => any;
+  getDayData: (day: number) => DayData;
   updateSleep: (day: number, value: number) => void;
 }
 
 const SleepTracker: React.FC<SleepTrackerProps> = ({
-  currentDate,
   daysInMonth,
   getDayData,
   updateSleep

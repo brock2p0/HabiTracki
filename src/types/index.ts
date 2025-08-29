@@ -1,7 +1,17 @@
+export type HabitType = 'critical' | 'goal' | 'avoid' | 'number';
+
+export const HABIT_TYPE_EMOJIS: Record<HabitType, string> = {
+  critical: '🔥',
+  goal: '🎯',
+  avoid: '❌',
+  number: '🔢',
+};
+
 export interface Habit {
   id: string;
   name: string;
-  type: 'critical' | 'goal' | 'avoid';
+  type: HabitType;
+  color: string;
 }
 
 export interface DayData {
