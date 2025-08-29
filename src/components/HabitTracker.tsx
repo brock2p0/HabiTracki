@@ -1,13 +1,12 @@
-import React, { useState, useEffect } from 'react';
-import { Calendar, Plus, Settings, Trash2, GripVertical } from 'lucide-react';
-import { format, getDaysInMonth, startOfMonth, getDay } from 'date-fns';
+import React, { useState } from 'react';
+import { Calendar, Settings } from 'lucide-react';
+import { format, getDaysInMonth } from 'date-fns';
 import CalendarGrid from './CalendarGrid';
 import HabitGrid from './HabitGrid';
 import MonthlyGoals from './MonthlyGoals';
 import SleepTracker from './SleepTracker';
 import HabitSettings from './HabitSettings';
 import { useHabitData } from '../hooks/useHabitData';
-import type { Habit } from '../types';
 
 const HabitTracker: React.FC = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -71,7 +70,7 @@ const HabitTracker: React.FC = () => {
         <header className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 mb-6" role="banner">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <Calendar className="w-8 h-8 text-indigo-600" />
+              <Calendar className="w-8 h-8 text-indigo-600" aria-hidden="true" />
               <div>
                 <h1 className="text-3xl font-bold text-slate-800">
                   {format(currentDate, 'MMMM yyyy')}
@@ -102,10 +101,10 @@ const HabitTracker: React.FC = () => {
                     ? 'bg-indigo-100 text-indigo-700' 
                     : 'text-slate-600 hover:text-slate-800 hover:bg-slate-100'
                 }`}
-              >
-                <Settings className="w-5 h-5" />
                 aria-label={showSettings ? "Close habit settings" : "Open habit settings"}
                 aria-expanded={showSettings}
+              >
+                <Settings className="w-5 h-5" />
               </button>
             </nav>
           </div>

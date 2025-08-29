@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { format, startOfMonth, getDay } from 'date-fns';
 import { Edit3, Calendar } from 'lucide-react';
+import type { DayData } from '../types';
 
 interface CalendarGridProps {
   currentDate: Date;
   daysInMonth: number;
-  getDayData: (day: number) => any;
+  getDayData: (day: number) => DayData;
   updateMoment: (day: number, value: string) => void;
 }
 
