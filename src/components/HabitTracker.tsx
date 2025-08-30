@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Calendar, Plus, Settings, Trash2, GripVertical } from 'lucide-react';
+import { Calendar, Target, Moon, CheckSquare, Settings } from 'lucide-react';
 import { format, getDaysInMonth, startOfMonth, getDay } from 'date-fns';
 import CalendarGrid from './CalendarGrid';
 import HabitGrid from './HabitGrid';
@@ -11,6 +11,7 @@ import type { Habit } from '../types';
 
 const HabitTracker: React.FC = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
+  const [activeTab, setActiveTab] = useState('habits');
   const [showSettings, setShowSettings] = useState(false);
   const { data, habits, updateData, updateHabits } = useHabitData();
 
@@ -19,6 +20,12 @@ const HabitTracker: React.FC = () => {
   const monthKey = `${currentYear}-${currentMonth}`;
   const daysInMonth = getDaysInMonth(currentDate);
 
+  const tabs = [
+    { id: 'habits', label: 'Daily Habits', icon: CheckSquare },
+    { id: 'moments', label: 'Memorable Moments', icon: Calendar },
+    { id: 'goals', label: 'Monthly Goals', icon: Target },
+    { id: 'sleep', label: 'Sleep Tracking', icon: Moon }
+  ];
   const navigateMonth = (direction: 'prev' | 'next') => {
     const newDate = new Date(currentYear, currentMonth + (direction === 'next' ? 1 : -1));
     setCurrentDate(newDate);
@@ -64,6 +71,46 @@ const HabitTracker: React.FC = () => {
     return data[monthKey]?.goals || ['', '', ''];
   };
 
+  const renderActiveContent = () => {
+    switch (activeTab) {
+      case 'habits':
+        return (
+          <HabitGrid
+            habits={habits}
+            daysInMonth={daysInMonth}
+            getDayData={getDayData}
+            updateHabit={updateHabit}
+          />
+        );
+      case 'moments':
+        return (
+          <CalendarGrid
+            currentDate={currentDate}
+            daysInMonth={daysInMonth}
+            getDayData={getDayData}
+            updateMoment={updateMoment}
+          />
+        );
+      case 'goals':
+        return (
+          <MonthlyGoals
+            goals={getGoals()}
+            onUpdateGoals={updateGoals}
+          />
+        );
+      case 'sleep':
+        return (
+          <SleepTracker
+            currentDate={currentDate}
+            daysInMonth={daysInMonth}
+            getDayData={getDayData}
+            updateSleep={updateSleep}
+          />
+        );
+      default:
+        return null;
+    }
+  };
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50" role="application" aria-label="Habit Tracker Application">
       <div className="max-w-7xl mx-auto p-6">
@@ -111,6 +158,33 @@ const HabitTracker: React.FC = () => {
           </div>
         </header>
 
+        {/* Tab Navigation */}
+        <nav className="bg-white rounded-2xl shadow-sm border border-slate-200 p-2 mb-6" role="navigation" aria-label="Dashboard sections">
+          <div className="flex gap-1">
+            {tabs.map((tab) => {
+              const Icon = tab.icon;
+              const isActive = activeTab === tab.id;
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`
+                    flex items-center gap-2 px-4 py-3 rounded-xl transition-all duration-200 flex-1 justify-center
+                    ${isActive 
+                      ? 'bg-indigo-600 text-white shadow-md' 
+                      : 'text-slate-600 hover:text-slate-800 hover:bg-slate-100'
+                    }
+                  `}
+                  aria-pressed={isActive}
+                  aria-label={`Switch to ${tab.label} section`}
+                >
+                  <Icon className="w-4 h-4" />
+                  <span className="font-medium">{tab.label}</span>
+                </button>
+              );
+            })}
+          </div>
+        </nav>
         {/* Settings Panel */}
         {showSettings && (
           <HabitSettings
@@ -120,41 +194,12 @@ const HabitTracker: React.FC = () => {
           />
         )}
 
-        {/* Main Content Grid */}
-        <main className="grid lg:grid-cols-2 gap-6 mb-6" role="main">
-          {/* Left Panel - Memorable Moments */}
-          <CalendarGrid
-            currentDate={currentDate}
-            daysInMonth={daysInMonth}
-            getDayData={getDayData}
-            updateMoment={updateMoment}
-          />
-
-          {/* Right Panel - Habit Tracking */}
-          <HabitGrid
-            habits={habits}
-            daysInMonth={daysInMonth}
-            getDayData={getDayData}
-            updateHabit={updateHabit}
-          />
+        {/* Main Content */}
+        <main role="main" aria-label={`${tabs.find(tab => tab.id === activeTab)?.label} section`}>
+          <div className="w-full">
+            {renderActiveContent()}
+          </div>
         </main>
-
-        {/* Bottom Section */}
-        <aside className="grid lg:grid-cols-2 gap-6" role="complementary" aria-label="Goals and sleep tracking">
-          {/* Monthly Goals */}
-          <MonthlyGoals
-            goals={getGoals()}
-            onUpdateGoals={updateGoals}
-          />
-
-          {/* Sleep Tracker */}
-          <SleepTracker
-            currentDate={currentDate}
-            daysInMonth={daysInMonth}
-            getDayData={getDayData}
-            updateSleep={updateSleep}
-          />
-        </aside>
       </div>
     </div>
   );
