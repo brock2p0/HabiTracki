@@ -85,101 +85,70 @@ const HabitGrid: React.FC<HabitGridProps> = ({
           </div>
 
           {/* Habit Grid */}
-          <div className="overflow-x-auto" role="region" aria-labelledby="habit-grid-label">
+          <div className="overflow-auto" role="region" aria-labelledby="habit-grid-label">
             <h3 id="habit-grid-label" className="sr-only">Daily habit completion grid</h3>
             <div className="min-w-full">
-              {/* Days Header */}
-              <div className="grid gap-1 mb-2" style={{ gridTemplateColumns: `120px repeat(${Math.min(daysInMonth, 15)}, 1fr)` }} role="row">
-                <div role="columnheader"></div>
-                {Array.from({ length: Math.min(daysInMonth, 15) }, (_, i) => i + 1).map(day => (
-                  <div key={day} className="text-center text-xs font-medium text-slate-500 py-1" role="columnheader">
-                    {day}
+              {/* Habit Headers (X-axis) */}
+              <div className="grid gap-1 mb-2" style={{ gridTemplateColumns: `60px repeat(${habits.length}, 1fr)` }} role="row">
+                <div className="text-xs font-medium text-slate-500 py-2" role="columnheader">Day</div>
+                {habits.map((habit, index) => (
+                  <div key={index} className="text-center text-xs font-medium text-slate-600 py-2 px-1" role="columnheader">
+                    <div className="flex flex-col items-center gap-1">
+                      <div className={`w-2 h-2 rounded-full ${
+                        habit.type === 'critical' ? 'bg-red-500' :
+                        habit.type === 'goal' ? 'bg-indigo-500' :
+                        habit.type === 'avoid' ? 'bg-orange-500' : 'bg-slate-500'
+                      }`}></div>
+                      <span className="leading-tight">{habit.name}</span>
+                    </div>
                   </div>
                 ))}
               </div>
 
-              {/* Habit Rows */}
-              {habits.map((habit, habitIndex) => (
-                <div key={habitIndex} className="grid gap-1 mb-2" style={{ gridTemplateColumns: `120px repeat(${Math.min(daysInMonth, 15)}, 1fr)` }} role="row">
-                  <div className="text-xs font-medium text-slate-600 py-2 pr-2 truncate" role="rowheader">
-                    {habit.name}
-                  </div>
-                  {Array.from({ length: Math.min(daysInMonth, 15) }, (_, i) => i + 1).map(day => {
-                    const isCompleted = getDayData(day).habits?.[habitIndex];
-                    return (
-                      <div key={day} role="gridcell">
-                        <button
-                        key={day}
-                        onClick={() => updateHabit(day, habitIndex, !isCompleted)}
-                        className={`
-                          h-8 rounded-md border-2 transition-all duration-200 flex items-center justify-center
-                          ${isCompleted 
-                            ? `${getHabitColor(habit.type)} bg-opacity-10` 
-                            : 'border-slate-200 hover:border-slate-300'
-                          }
-                        `}
-                        aria-label={`${habit.name} for day ${day}: ${isCompleted ? 'completed' : 'not completed'}`}
-                        aria-pressed={isCompleted}
-                      >
-                        {isCompleted ? (
-                          <CheckSquare className="w-4 h-4" />
-                        ) : (
-                          <Square className="w-4 h-4 opacity-30" />
-                        )}
-                        </button>
-                      </div>
-                    );
-                  })}
-                </div>
-              ))}
-
-              {/* Second row for months with more than 15 days */}
-              {daysInMonth > 15 && (
-                <>
-                  <div className="grid gap-1 mb-2 mt-4" style={{ gridTemplateColumns: `120px repeat(${daysInMonth - 15}, 1fr)` }} role="row">
-                    <div role="columnheader"></div>
-                    {Array.from({ length: daysInMonth - 15 }, (_, i) => i + 16).map(day => (
-                      <div key={day} className="text-center text-xs font-medium text-slate-500 py-1" role="columnheader">
+              {/* Day Rows (Y-axis) */}
+              <div className="space-y-1">
+                {Array.from({ length: daysInMonth }, (_, i) => i + 1).map(day => {
+                  const today = new Date();
+                  const isToday = today.getDate() === day && 
+                                 today.getMonth() === new Date().getMonth() && 
+                                 today.getFullYear() === new Date().getFullYear();
+                  
+                  return (
+                    <div key={day} className="grid gap-1" style={{ gridTemplateColumns: `60px repeat(${habits.length}, 1fr)` }} role="row">
+                      <div className={`text-xs font-medium py-2 px-2 text-center rounded-md ${
+                        isToday ? 'bg-indigo-100 text-indigo-700 font-bold' : 'text-slate-600'
+                      }`} role="rowheader">
                         {day}
                       </div>
-                    ))}
-                  </div>
-
-                  {habits.map((habit, habitIndex) => (
-                    <div key={habitIndex} className="grid gap-1 mb-2" style={{ gridTemplateColumns: `120px repeat(${daysInMonth - 15}, 1fr)` }} role="row">
-                      <div className="text-xs font-medium text-slate-600 py-2 pr-2 truncate" role="rowheader">
-                        {habit.name}
-                      </div>
-                      {Array.from({ length: daysInMonth - 15 }, (_, i) => i + 16).map(day => {
+                      {habits.map((habit, habitIndex) => {
                         const isCompleted = getDayData(day).habits?.[habitIndex];
                         return (
-                          <div key={day} role="gridcell">
+                          <div key={habitIndex} role="gridcell">
                             <button
-                            key={day}
-                            onClick={() => updateHabit(day, habitIndex, !isCompleted)}
-                            className={`
-                              h-8 rounded-md border-2 transition-all duration-200 flex items-center justify-center
-                              ${isCompleted 
-                                ? `${getHabitColor(habit.type)} bg-opacity-10` 
-                                : 'border-slate-200 hover:border-slate-300'
-                              }
-                            `}
-                            aria-label={`${habit.name} for day ${day}: ${isCompleted ? 'completed' : 'not completed'}`}
-                            aria-pressed={isCompleted}
-                          >
-                            {isCompleted ? (
-                              <CheckSquare className="w-4 h-4" />
-                            ) : (
-                              <Square className="w-4 h-4 opacity-30" />
-                            )}
+                              onClick={() => updateHabit(day, habitIndex, !isCompleted)}
+                              className={`
+                                w-full h-8 rounded-md border-2 transition-all duration-200 flex items-center justify-center
+                                ${isCompleted 
+                                  ? `${getHabitColor(habit.type)} bg-opacity-10` 
+                                  : 'border-slate-200 hover:border-slate-300'
+                                }
+                              `}
+                              aria-label={`${habit.name} for day ${day}: ${isCompleted ? 'completed' : 'not completed'}`}
+                              aria-pressed={isCompleted}
+                            >
+                              {isCompleted ? (
+                                <CheckSquare className="w-4 h-4" />
+                              ) : (
+                                <Square className="w-4 h-4 opacity-30" />
+                              )}
                             </button>
                           </div>
                         );
                       })}
                     </div>
-                  ))}
-                </>
-              )}
+                  );
+                })}
+              </div>
             </div>
           </div>
         </div>
