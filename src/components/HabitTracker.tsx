@@ -77,6 +77,7 @@ const HabitTracker: React.FC = () => {
         return (
           <HabitGrid
             habits={habits}
+           currentDate={currentDate}
             daysInMonth={daysInMonth}
             getDayData={getDayData}
             updateHabit={updateHabit}

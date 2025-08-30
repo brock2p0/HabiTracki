@@ -1,9 +1,11 @@
 import React from 'react';
 import { CheckSquare, Square, Target } from 'lucide-react';
+import { format } from 'date-fns';
 import type { Habit } from '../types';
 
 interface HabitGridProps {
   habits: Habit[];
+  currentDate: Date;
   daysInMonth: number;
   getDayData: (day: number) => any;
   updateHabit: (day: number, habitIndex: number, value: boolean | number) => void;
@@ -11,6 +13,7 @@ interface HabitGridProps {
 
 const HabitGrid: React.FC<HabitGridProps> = ({
   habits,
+  currentDate,
   daysInMonth,
   getDayData,
   updateHabit
@@ -109,16 +112,17 @@ const HabitGrid: React.FC<HabitGridProps> = ({
               <div className="space-y-1">
                 {Array.from({ length: daysInMonth }, (_, i) => i + 1).map(day => {
                   const today = new Date();
+                  const dayDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
                   const isToday = today.getDate() === day && 
-                                 today.getMonth() === new Date().getMonth() && 
-                                 today.getFullYear() === new Date().getFullYear();
+                                 today.getMonth() === currentDate.getMonth() && 
+                                 today.getFullYear() === currentDate.getFullYear();
                   
                   return (
                     <div key={day} className="grid gap-1" style={{ gridTemplateColumns: `60px repeat(${habits.length}, 1fr)` }} role="row">
                       <div className={`text-xs font-medium py-2 px-2 text-center rounded-md ${
                         isToday ? 'bg-indigo-100 text-indigo-700 font-bold' : 'text-slate-600'
                       }`} role="rowheader">
-                        {day}
+                        {format(dayDate, 'EEEE do')}
                       </div>
                       {habits.map((habit, habitIndex) => {
                         const isCompleted = getDayData(day).habits?.[habitIndex];
