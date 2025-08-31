@@ -92,7 +92,7 @@ const HabitGrid: React.FC<HabitGridProps> = ({
             <h3 id="habit-grid-label" className="sr-only">Daily habit completion grid</h3>
             <div className="min-w-full">
               {/* Habit Headers (X-axis) */}
-              <div className="grid gap-2 mb-3" style={{ gridTemplateColumns: `180px repeat(${habits.length}, 1fr)` }} role="row">
+              <div className="grid gap-2 mb-3" style={{ gridTemplateColumns: `150px repeat(${habits.length}, 1fr)` }} role="row">
                 <div className="text-sm font-medium text-slate-500 py-3 px-2" role="columnheader">Day</div>
                 {habits.map((habit, index) => (
                   <div key={index} className="text-center text-xs font-medium text-slate-600 py-3 px-2" role="columnheader">
@@ -118,10 +118,10 @@ const HabitGrid: React.FC<HabitGridProps> = ({
                                  today.getFullYear() === currentDate.getFullYear();
                   
                   return (
-                    <div key={day} className="grid gap-2" style={{ gridTemplateColumns: `180px repeat(${habits.length}, 1fr)` }} role="row">
+                    <div key={day} className="grid gap-2" style={{ gridTemplateColumns: `150px repeat(${habits.length}, 1fr)` }} role="row">
                       <div className={`text-xs font-medium py-2 px-2 text-center rounded-md ${
                         isToday ? 'bg-indigo-100 text-indigo-700 font-bold' : 'text-slate-600'
-                      }`} role="rowheader">
+                      } text-left`} role="rowheader">
                         {format(dayDate, 'EEEE do')}
                       </div>
                       {habits.map((habit, habitIndex) => {
