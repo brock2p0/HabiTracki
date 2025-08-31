@@ -92,10 +92,10 @@ const HabitGrid: React.FC<HabitGridProps> = ({
             <h3 id="habit-grid-label" className="sr-only">Daily habit completion grid</h3>
             <div className="min-w-full">
               {/* Habit Headers (X-axis) */}
-              <div className="grid gap-1 mb-2" style={{ gridTemplateColumns: `60px repeat(${habits.length}, 1fr)` }} role="row">
-                <div className="text-xs font-medium text-slate-500 py-2" role="columnheader">Day</div>
+              <div className="grid gap-2 mb-3" style={{ gridTemplateColumns: `180px repeat(${habits.length}, 1fr)` }} role="row">
+                <div className="text-sm font-medium text-slate-500 py-3 px-2" role="columnheader">Day</div>
                 {habits.map((habit, index) => (
-                  <div key={index} className="text-center text-xs font-medium text-slate-600 py-2 px-1" role="columnheader">
+                  <div key={index} className="text-center text-xs font-medium text-slate-600 py-3 px-2" role="columnheader">
                     <div className="flex flex-col items-center gap-1">
                       <div className={`w-2 h-2 rounded-full ${
                         habit.type === 'critical' ? 'bg-red-500' :
@@ -109,7 +109,7 @@ const HabitGrid: React.FC<HabitGridProps> = ({
               </div>
 
               {/* Day Rows (Y-axis) */}
-              <div className="space-y-1">
+              <div className="space-y-2">
                 {Array.from({ length: daysInMonth }, (_, i) => i + 1).map(day => {
                   const today = new Date();
                   const dayDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
@@ -118,7 +118,7 @@ const HabitGrid: React.FC<HabitGridProps> = ({
                                  today.getFullYear() === currentDate.getFullYear();
                   
                   return (
-                    <div key={day} className="grid gap-1" style={{ gridTemplateColumns: `60px repeat(${habits.length}, 1fr)` }} role="row">
+                    <div key={day} className="grid gap-2" style={{ gridTemplateColumns: `180px repeat(${habits.length}, 1fr)` }} role="row">
                       <div className={`text-xs font-medium py-2 px-2 text-center rounded-md ${
                         isToday ? 'bg-indigo-100 text-indigo-700 font-bold' : 'text-slate-600'
                       }`} role="rowheader">
@@ -131,10 +131,12 @@ const HabitGrid: React.FC<HabitGridProps> = ({
                             <button
                               onClick={() => updateHabit(day, habitIndex, !isCompleted)}
                               className={`
-                                w-full h-8 rounded-md border-2 transition-all duration-200 flex items-center justify-center
+                                w-full h-10 rounded-lg border transition-all duration-200 flex items-center justify-center hover:scale-105
                                 ${isCompleted 
-                                  ? `${getHabitColor(habit.type)} bg-opacity-10` 
-                                  : 'border-slate-200 hover:border-slate-300'
+                                  ? habit.type === 'critical' ? 'border-red-300 bg-red-50 text-red-600' :
+                                    habit.type === 'goal' ? 'border-indigo-300 bg-indigo-50 text-indigo-600' :
+                                    'border-orange-300 bg-orange-50 text-orange-600'
+                                  : 'border-slate-200 hover:border-slate-300 text-slate-400 hover:text-slate-600'
                                 }
                               `}
                               aria-label={`${habit.name} for day ${day}: ${isCompleted ? 'completed' : 'not completed'}`}
@@ -143,7 +145,7 @@ const HabitGrid: React.FC<HabitGridProps> = ({
                               {isCompleted ? (
                                 <CheckSquare className="w-4 h-4" />
                               ) : (
-                                <Square className="w-4 h-4 opacity-30" />
+                                <Square className="w-4 h-4 opacity-50" />
                               )}
                             </button>
                           </div>
