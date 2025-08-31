@@ -191,6 +191,8 @@ const HabitTracker: React.FC = () => {
           <HabitSettings
             habits={habits}
             onUpdateHabits={updateHabits}
+            data={data}
+            onUpdateData={updateData}
             onClose={() => setShowSettings(false)}
           />
         )}
