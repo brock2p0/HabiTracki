@@ -150,10 +150,13 @@ const HabitTracker: React.FC = () => {
                     ? 'bg-active-tab-highlight-light text-active-tab-highlight' 
                     : 'text-slate-600 hover:text-slate-800 hover:bg-slate-100'
                 }`}
+               aria-label={showSettings ? "Close habit settings" : "Open habit settings"}
+               aria-expanded={showSettings}
               >
-                <Settings className="w-5 h-5" />
-                aria-label={showSettings ? "Close habit settings" : "Open habit settings"}
-                aria-expanded={showSettings}
+                <div className="flex items-center gap-2">
+                  <Settings className="w-5 h-5" />
+                  <span className="text-sm font-medium">Settings</span>
+                </div>
               </button>
             </nav>
           </div>
