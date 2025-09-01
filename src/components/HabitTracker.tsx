@@ -147,7 +147,7 @@ const HabitTracker: React.FC = () => {
                 onClick={() => setShowSettings(!showSettings)}
                 className={`p-2 rounded-lg transition-colors ${
                   showSettings 
-                    ? 'bg-indigo-100 text-indigo-700' 
+                    ? 'bg-active-tab-highlight-light text-active-tab-highlight' 
                     : 'text-slate-600 hover:text-slate-800 hover:bg-slate-100'
                 }`}
               >
@@ -172,7 +172,7 @@ const HabitTracker: React.FC = () => {
                   className={`
                     flex items-center gap-2 px-4 py-3 rounded-xl transition-all duration-200 flex-1 justify-center
                     ${isActive 
-                      ? 'bg-indigo-600 text-white shadow-md' 
+                      ? 'bg-active-tab-highlight text-white shadow-md' 
                       : 'text-slate-600 hover:text-slate-800 hover:bg-slate-100'
                     }
                   `}

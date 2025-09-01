@@ -5,7 +5,9 @@ export default {
     extend: {
       colors: {
         'primary-bg': '#008631',
-        'secondary-bg': '#83f28f',
+        'secondary-bg': '#f0fff0',
+        'active-tab-highlight': '#00c04b',
+        'active-tab-highlight-light': '#ccffcc',
         'habit-goal': {
           50: '#eff6ff',
           100: '#dbeafe',
