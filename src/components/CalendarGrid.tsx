@@ -46,7 +46,7 @@ const CalendarGrid: React.FC<CalendarGridProps> = ({
   };
 
   return (
-    <section className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6" aria-labelledby="calendar-heading">
+    <section className="bg-secondary-bg rounded-2xl shadow-sm border border-slate-200 p-6" aria-labelledby="calendar-heading">
       <div className="flex items-center gap-2 mb-6">
         <Calendar className="w-5 h-5 text-indigo-600" />
         <h2 id="calendar-heading" className="text-xl font-semibold text-slate-800">Memorable Moments</h2>

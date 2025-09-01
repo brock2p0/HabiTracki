@@ -113,10 +113,10 @@ const HabitTracker: React.FC = () => {
     }
   };
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50" role="application" aria-label="Habit Tracker Application">
+    <div className="min-h-screen bg-primary-bg" role="application" aria-label="Habit Tracker Application">
       <div className="max-w-7xl mx-auto p-6">
         {/* Header */}
-        <header className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 mb-6" role="banner">
+        <header className="bg-secondary-bg rounded-2xl shadow-sm border border-slate-200 p-6 mb-6" role="banner">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <Calendar className="w-8 h-8 text-indigo-600" />
@@ -160,7 +160,7 @@ const HabitTracker: React.FC = () => {
         </header>
 
         {/* Tab Navigation */}
-        <nav className="bg-white rounded-2xl shadow-sm border border-slate-200 p-2 mb-6" role="navigation" aria-label="Dashboard sections">
+        <nav className="bg-secondary-bg rounded-2xl shadow-sm border border-slate-200 p-2 mb-6" role="navigation" aria-label="Dashboard sections">
           <div className="flex gap-1">
             {tabs.map((tab) => {
               const Icon = tab.icon;

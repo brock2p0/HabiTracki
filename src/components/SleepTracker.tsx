@@ -53,7 +53,7 @@ const SleepTracker: React.FC<SleepTrackerProps> = ({
   const averageSleep = getAverageSleep();
 
   return (
-    <section className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6" aria-labelledby="sleep-heading">
+    <section className="bg-secondary-bg rounded-2xl shadow-sm border border-slate-200 p-6" aria-labelledby="sleep-heading">
       <div className="flex items-center gap-2 mb-6">
         <Moon className="w-5 h-5 text-indigo-600" />
         <h2 id="sleep-heading" className="text-xl font-semibold text-slate-800">Sleep Tracking</h2>
@@ -62,13 +62,13 @@ const SleepTracker: React.FC<SleepTrackerProps> = ({
       {/* Sleep Stats */}
       <div className="grid grid-cols-2 gap-4 mb-6" role="region" aria-labelledby="sleep-stats">
         <h3 id="sleep-stats" className="sr-only">Sleep statistics</h3>
-        <div className="bg-slate-50 rounded-lg p-3">
+        <div className="bg-white rounded-lg p-3">
           <div className="text-xs text-slate-500 mb-1" id="avg-sleep-label">Average Sleep</div>
           <div className="text-lg font-semibold text-slate-800">
             {averageSleep > 0 ? `${averageSleep}h` : '--'}
           </div>
         </div>
-        <div className="bg-slate-50 rounded-lg p-3">
+        <div className="bg-white rounded-lg p-3">
           <div className="text-xs text-slate-500 mb-1" id="days-tracked-label">Days Tracked</div>
           <div className="text-lg font-semibold text-slate-800">
             {getSleepData().length}/{daysInMonth}
@@ -79,7 +79,7 @@ const SleepTracker: React.FC<SleepTrackerProps> = ({
       {/* Sleep Graph */}
       <div className="mb-6" role="region" aria-labelledby="sleep-chart">
         <h3 id="sleep-chart" className="sr-only">Sleep hours chart</h3>
-        <div className="relative bg-slate-50 rounded-lg p-4">
+        <div className="relative bg-white rounded-lg p-4">
           <svg width="300" height="140" className="mx-auto" role="img" aria-labelledby="chart-title" aria-describedby="chart-desc">
             <title id="chart-title">Sleep Hours Chart</title>
             <desc id="chart-desc">A line chart showing daily sleep hours for the current month with average sleep line</desc>
@@ -124,7 +124,7 @@ const SleepTracker: React.FC<SleepTrackerProps> = ({
               <path
                 d={createSleepPath()}
                 fill="none"
-                stroke="#6366f1"
+                stroke="#3b82f6"
                 strokeWidth="2"
               />
             )}
@@ -136,7 +136,7 @@ const SleepTracker: React.FC<SleepTrackerProps> = ({
                 cx={20 + (point.day / daysInMonth) * 260}
                 cy={140 - ((point.hours - 4) / 6) * 120}
                 r="4"
-                fill="#6366f1"
+                fill="#3b82f6"
                 className="hover:r-6 transition-all cursor-pointer"
               />
             ))}

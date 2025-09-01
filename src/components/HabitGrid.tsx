@@ -20,9 +20,9 @@ const HabitGrid: React.FC<HabitGridProps> = ({
 }) => {
   const getHabitColor = (type: string) => {
     switch (type) {
-      case 'critical': return 'text-red-600 border-red-200';
-      case 'goal': return 'text-indigo-600 border-indigo-200';
-      case 'avoid': return 'text-orange-600 border-orange-200';
+      case 'critical': return 'text-habit-critical-700 border-habit-critical-300';
+      case 'goal': return 'text-habit-goal-600 border-habit-goal-300';
+      case 'avoid': return 'text-habit-avoid-600 border-habit-avoid-300';
       default: return 'text-slate-600 border-slate-200';
     }
   };
@@ -43,7 +43,7 @@ const HabitGrid: React.FC<HabitGridProps> = ({
   };
 
   return (
-    <section className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6" aria-labelledby="habits-heading">
+    <section className="bg-secondary-bg rounded-2xl shadow-sm border border-slate-200 p-6" aria-labelledby="habits-heading">
       <div className="flex items-center gap-2 mb-6">
         <Target className="w-5 h-5 text-indigo-600" />
         <h2 id="habits-heading" className="text-xl font-semibold text-slate-800">Daily Habits</h2>
@@ -62,9 +62,9 @@ const HabitGrid: React.FC<HabitGridProps> = ({
               <div key={habitIndex} className="flex items-center justify-between" role="listitem">
                 <div className="flex items-center gap-3">
                   <div className={`w-3 h-3 rounded-full ${
-                    habit.type === 'critical' ? 'bg-red-500' :
-                    habit.type === 'goal' ? 'bg-indigo-500' :
-                    habit.type === 'avoid' ? 'bg-orange-500' : 'bg-slate-500'
+                    habit.type === 'critical' ? 'bg-habit-critical-500' :
+                    habit.type === 'goal' ? 'bg-habit-goal-500' :
+                    habit.type === 'avoid' ? 'bg-habit-avoid-500' : 'bg-slate-500'
                   }`}></div>
                   <span className="font-medium text-slate-700">{habit.name}</span>
                 </div>
@@ -72,9 +72,9 @@ const HabitGrid: React.FC<HabitGridProps> = ({
                   <div className="w-16 bg-slate-200 rounded-full h-2" role="progressbar" aria-valuenow={getCompletionRate(habitIndex)} aria-valuemin={0} aria-valuemax={100} aria-label={`${habit.name} completion rate`}>
                     <div 
                       className={`h-2 rounded-full transition-all duration-300 ${
-                        habit.type === 'critical' ? 'bg-red-500' :
-                        habit.type === 'goal' ? 'bg-indigo-500' :
-                        habit.type === 'avoid' ? 'bg-orange-500' : 'bg-slate-500'
+                        habit.type === 'critical' ? 'bg-habit-critical-500' :
+                        habit.type === 'goal' ? 'bg-habit-goal-500' :
+                        habit.type === 'avoid' ? 'bg-habit-avoid-500' : 'bg-slate-500'
                       }`}
                       style={{ width: `${getCompletionRate(habitIndex)}%` }}
                     ></div>
@@ -98,9 +98,9 @@ const HabitGrid: React.FC<HabitGridProps> = ({
                   <div key={index} className="text-center text-xs font-medium text-slate-600 py-3 px-2" role="columnheader">
                     <div className="flex flex-col items-center gap-1">
                       <div className={`w-2 h-2 rounded-full ${
-                        habit.type === 'critical' ? 'bg-red-500' :
-                        habit.type === 'goal' ? 'bg-indigo-500' :
-                        habit.type === 'avoid' ? 'bg-orange-500' : 'bg-slate-500'
+                        habit.type === 'critical' ? 'bg-habit-critical-500' :
+                        habit.type === 'goal' ? 'bg-habit-goal-500' :
+                        habit.type === 'avoid' ? 'bg-habit-avoid-500' : 'bg-slate-500'
                       }`}></div>
                       <span className="leading-tight">{habit.name}</span>
                     </div>
@@ -133,9 +133,9 @@ const HabitGrid: React.FC<HabitGridProps> = ({
                               className={`
                                 w-full h-10 rounded-lg border transition-all duration-200 flex items-center justify-center hover:scale-105
                                 ${isCompleted 
-                                  ? habit.type === 'critical' ? 'border-red-300 bg-red-50 text-red-600' :
-                                    habit.type === 'goal' ? 'border-indigo-300 bg-indigo-50 text-indigo-600' :
-                                    'border-orange-300 bg-orange-50 text-orange-600'
+                                  ? habit.type === 'critical' ? 'border-habit-critical-300 bg-habit-critical-50 text-habit-critical-700' :
+                                    habit.type === 'goal' ? 'border-habit-goal-300 bg-habit-goal-50 text-habit-goal-600' :
+                                    'border-habit-avoid-300 bg-habit-avoid-50 text-habit-avoid-600'
                                   : 'border-slate-200 hover:border-slate-300 text-slate-400 hover:text-slate-600'
                                 }
                               `}
