@@ -14,3 +14,17 @@
   white-space: nowrap;
   border: 0;
 }
+
+/* Drag and drop styles */
+.dragging {
+  opacity: 0.5;
+  transform: rotate(2deg);
+  transition: transform 0.2s ease;
+}
+
+.drag-over {
+  background-color: #e0f2fe !important;
+  border: 2px dashed #0284c7 !important;
+  transform: scale(1.02);
+  transition: all 0.2s ease;
+}

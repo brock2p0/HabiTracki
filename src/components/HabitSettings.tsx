@@ -12,6 +12,7 @@ interface HabitSettingsProps {
 
 const HabitSettings: React.FC<HabitSettingsProps> = ({ habits, onUpdateHabits, data, onUpdateData, onClose }) => {
   const [editingHabits, setEditingHabits] = useState([...habits]);
+  const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
 
   const addHabit = () => {
     const newHabit: Habit = {
@@ -43,6 +44,55 @@ const HabitSettings: React.FC<HabitSettingsProps> = ({ habits, onUpdateHabits, d
     newHabits.splice(toIndex, 0, movedHabit);
     setEditingHabits(newHabits);
     onUpdateHabits(newHabits);
+  };
+
+  const handleDragStart = (e: React.DragEvent, index: number) => {
+    setDraggedIndex(index);
+    e.dataTransfer.setData('text/plain', index.toString());
+    e.dataTransfer.effectAllowed = 'move';
+    
+    // Add dragging class after a small delay to avoid flickering
+    setTimeout(() => {
+      const element = e.target as HTMLElement;
+      element.classList.add('dragging');
+    }, 0);
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    const element = e.currentTarget as HTMLElement;
+    element.classList.add('drag-over');
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    const element = e.currentTarget as HTMLElement;
+    element.classList.remove('drag-over');
+  };
+
+  const handleDrop = (e: React.DragEvent, dropIndex: number) => {
+    e.preventDefault();
+    const element = e.currentTarget as HTMLElement;
+    element.classList.remove('drag-over');
+    
+    const dragIndex = parseInt(e.dataTransfer.getData('text/plain'));
+    
+    if (dragIndex !== dropIndex && draggedIndex !== null) {
+      moveHabit(dragIndex, dropIndex);
+    }
+    
+    setDraggedIndex(null);
+  };
+
+  const handleDragEnd = (e: React.DragEvent) => {
+    const element = e.target as HTMLElement;
+    element.classList.remove('dragging');
+    setDraggedIndex(null);
+    
+    // Clean up any remaining drag-over classes
+    document.querySelectorAll('.drag-over').forEach(el => {
+      el.classList.remove('drag-over');
+    });
   };
 
   const getTypeColor = (type: string) => {
@@ -116,8 +166,18 @@ const HabitSettings: React.FC<HabitSettingsProps> = ({ habits, onUpdateHabits, d
 
       <div className="space-y-3 mb-6" role="list" aria-label="Habit configuration list">
         {editingHabits.map((habit, index) => (
-          <div key={habit.id} className="flex items-center gap-3 p-3 bg-white rounded-lg" role="listitem">
-            <button className="text-slate-400 hover:text-slate-600 cursor-grab" aria-label={`Reorder ${habit.name} habit`}>
+          <div 
+            key={habit.id} 
+            className="flex items-center gap-3 p-3 bg-white rounded-lg transition-all duration-200" 
+            role="listitem"
+            draggable="true"
+            onDragStart={(e) => handleDragStart(e, index)}
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+            onDrop={(e) => handleDrop(e, index)}
+            onDragEnd={handleDragEnd}
+          >
+            <button className="text-slate-400 hover:text-slate-600 cursor-grab active:cursor-grabbing" aria-label={`Reorder ${habit.name} habit`}>
               <GripVertical className="w-4 h-4" />
             </button>
             
