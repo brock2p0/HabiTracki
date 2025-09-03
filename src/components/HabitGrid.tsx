@@ -95,7 +95,7 @@ const HabitGrid: React.FC<HabitGridProps> = ({
               <div className="grid gap-2 mb-3" style={{ gridTemplateColumns: `150px repeat(${habits.length}, 1fr)` }} role="row">
                 <div className="text-sm font-medium text-slate-500 py-3 px-2" role="columnheader">Day</div>
                 {habits.map((habit, index) => (
-                  <div key={index} className="text-center text-xs font-medium text-slate-600 py-3 px-2" role="columnheader">
+                  <div key={index} className="text-center text-xs font-medium text-slate-600 py-3 px-0.5" role="columnheader">
                     <div className="flex flex-col items-center gap-1">
                       <div className={`w-2 h-2 rounded-full ${
                         habit.type === 'critical' ? 'bg-habit-critical-500' :
@@ -131,7 +131,7 @@ const HabitGrid: React.FC<HabitGridProps> = ({
                             <button
                               onClick={() => updateHabit(day, habitIndex, !isCompleted)}
                               className={`
-                                w-full h-10 rounded-lg border transition-all duration-200 flex items-center justify-center hover:scale-105
+                                w-full h-10 rounded-lg border transition-all duration-200 flex items-center justify-center hover:scale-105 mx-0.5
                                 ${isCompleted 
                                   ? habit.type === 'critical' ? 'border-habit-critical-300 bg-habit-critical-50 text-habit-critical-700' :
                                     habit.type === 'goal' ? 'border-habit-goal-300 bg-habit-goal-50 text-habit-goal-600' :
