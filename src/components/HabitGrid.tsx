@@ -1,6 +1,7 @@
 import React from 'react';
 import { CheckSquare, Square, Target } from 'lucide-react';
 import { format } from 'date-fns';
+import { isBefore, startOfDay } from 'date-fns';
 import type { Habit } from '../types';
 
 interface HabitGridProps {
@@ -18,6 +19,8 @@ const HabitGrid: React.FC<HabitGridProps> = ({
   getDayData,
   updateHabit
 }) => {
+  const today = startOfDay(new Date());
+
   const getHabitColor = (type: string) => {
     switch (type) {
       case 'critical': return 'text-habit-critical-700 border-habit-critical-300';
@@ -111,18 +114,21 @@ const HabitGrid: React.FC<HabitGridProps> = ({
               {/* Day Rows (Y-axis) */}
               <div className="space-y-2">
                 {Array.from({ length: daysInMonth }, (_, i) => i + 1).map(day => {
-                  const today = new Date();
+                  const todayCheck = new Date();
                   const dayDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
-                  const isToday = today.getDate() === day && 
-                                 today.getMonth() === currentDate.getMonth() && 
-                                 today.getFullYear() === currentDate.getFullYear();
+                  const isToday = todayCheck.getDate() === day && 
+                                 todayCheck.getMonth() === currentDate.getMonth() && 
+                                 todayCheck.getFullYear() === currentDate.getFullYear();
+                  const isPastDay = isBefore(dayDate, today);
                   
                   return (
                     <div key={day} className="grid gap-2" style={{ gridTemplateColumns: `150px repeat(${habits.length}, 1fr)` }} role="row">
                       <div className={`text-xs font-medium py-2 px-2 text-center rounded-md ${
                         isToday ? 'bg-indigo-100 text-indigo-700 font-bold' : 'text-slate-600'
                       } text-left`} role="rowheader">
-                        {format(dayDate, 'EEEE do')}
+                        <div className={`${isPastDay ? 'line-through' : ''}`}>
+                          {format(dayDate, 'EEEE do')}
+                        </div>
                       </div>
                       {habits.map((habit, habitIndex) => {
                         const isCompleted = getDayData(day).habits?.[habitIndex];
