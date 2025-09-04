@@ -18,7 +18,8 @@ const HabitSettings: React.FC<HabitSettingsProps> = ({ habits, onUpdateHabits, d
     const newHabit: Habit = {
       id: Date.now().toString(),
       name: 'NEW HABIT',
-      type: 'goal'
+      type: 'goal',
+      description: ''
     };
     const newHabits = [...editingHabits, newHabit];
     setEditingHabits(newHabits);
@@ -166,9 +167,9 @@ const HabitSettings: React.FC<HabitSettingsProps> = ({ habits, onUpdateHabits, d
 
       <div className="space-y-3 mb-6" role="list" aria-label="Habit configuration list">
         {editingHabits.map((habit, index) => (
-          <div 
+          <div
             key={habit.id} 
-            className="flex items-center gap-3 p-3 bg-white rounded-lg transition-all duration-200" 
+            className="p-3 bg-white rounded-lg transition-all duration-200" 
             role="listitem"
             draggable="true"
             onDragStart={(e) => handleDragStart(e, index)}
@@ -177,37 +178,49 @@ const HabitSettings: React.FC<HabitSettingsProps> = ({ habits, onUpdateHabits, d
             onDrop={(e) => handleDrop(e, index)}
             onDragEnd={handleDragEnd}
           >
-            <button className="text-slate-400 hover:text-slate-600 cursor-grab active:cursor-grabbing" aria-label={`Reorder ${habit.name} habit`}>
-              <GripVertical className="w-4 h-4" />
-            </button>
+            <div className="flex items-center gap-3 mb-3">
+              <button className="text-slate-400 hover:text-slate-600 cursor-grab active:cursor-grabbing" aria-label={`Reorder ${habit.name} habit`}>
+                <GripVertical className="w-4 h-4" />
+              </button>
+              
+              <input
+                type="text"
+                value={habit.name}
+                onChange={(e) => updateHabit(index, 'name', e.target.value.toUpperCase())}
+                className="flex-1 px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                placeholder="Habit name..."
+                aria-label={`Habit ${index + 1} name`}
+              />
+              
+              <select
+                value={habit.type}
+                onChange={(e) => updateHabit(index, 'type', e.target.value)}
+                className={`px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent ${getTypeColor(habit.type)}`}
+                aria-label={`Habit ${index + 1} type`}
+              >
+                <option value="critical">Critical</option>
+                <option value="goal">Goal</option>
+                <option value="avoid">Avoid</option>
+              </select>
+              
+              <button
+                onClick={() => deleteHabit(index)}
+                className="p-2 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors"
+                aria-label={`Delete ${habit.name} habit`}
+              >
+                <Trash2 className="w-4 h-4" />
+              </button>
+            </div>
             
-            <input
-              type="text"
-              value={habit.name}
-              onChange={(e) => updateHabit(index, 'name', e.target.value.toUpperCase())}
-              className="flex-1 px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-              placeholder="Habit name..."
-              aria-label={`Habit ${index + 1} name`}
+            <textarea
+              value={habit.description || ''}
+              onChange={(e) => updateHabit(index, 'description', e.target.value)}
+              className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm resize-y"
+              placeholder="Describe what this habit means to you and how you define completion..."
+              rows={2}
+              maxLength={300}
+              aria-label={`Description for ${habit.name} habit`}
             />
-            
-            <select
-              value={habit.type}
-              onChange={(e) => updateHabit(index, 'type', e.target.value)}
-              className={`px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent ${getTypeColor(habit.type)}`}
-              aria-label={`Habit ${index + 1} type`}
-            >
-              <option value="critical">Critical</option>
-              <option value="goal">Goal</option>
-              <option value="avoid">Avoid</option>
-            </select>
-            
-            <button
-              onClick={() => deleteHabit(index)}
-              className="p-2 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors"
-              aria-label={`Delete ${habit.name} habit`}
-            >
-              <Trash2 className="w-4 h-4" />
-            </button>
           </div>
         ))}
       </div>

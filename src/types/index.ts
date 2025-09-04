@@ -2,6 +2,7 @@ export interface Habit {
   id: string;
   name: string;
   type: 'critical' | 'goal' | 'avoid';
+  description?: string;
 }
 
 export interface DayData {
