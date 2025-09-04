@@ -96,9 +96,9 @@ const HabitGrid: React.FC<HabitGridProps> = ({
             <div className="min-w-full">
               {/* Habit Headers (X-axis) */}
               <div className="grid gap-2 mb-3" style={{ gridTemplateColumns: `150px repeat(${habits.length}, 1fr)` }} role="row">
-                <div className="text-sm font-medium text-slate-500 py-3 px-2" role="columnheader">Day</div>
+                <div className="text-sm font-medium text-slate-500 py-3 px-2 border-r border-slate-400" role="columnheader">Day</div>
                 {habits.map((habit, index) => (
-                  <div key={index} className="text-center text-xs font-medium text-slate-600 py-3 px-0.5" role="columnheader">
+                  <div key={index} className={`text-center text-xs font-medium text-slate-600 py-3 px-0.5 ${index < habits.length - 1 ? 'border-r border-slate-400' : ''}`} role="columnheader">
                     <div className="flex flex-col items-center gap-1">
                       <div className={`w-2 h-2 rounded-full ${
                         habit.type === 'critical' ? 'bg-habit-critical-500' :
@@ -125,7 +125,7 @@ const HabitGrid: React.FC<HabitGridProps> = ({
                     <div key={day} className="grid gap-2" style={{ gridTemplateColumns: `150px repeat(${habits.length}, 1fr)` }} role="row">
                       <div className={`text-xs font-medium py-2 px-2 text-center rounded-md ${
                         isToday ? 'bg-indigo-100 text-indigo-700 font-bold' : 'text-slate-600'
-                      } text-left`} role="rowheader">
+                      } text-left border-r border-slate-400`} role="rowheader">
                         <div className={isPastDay ? 'line-through' : ''}>
                           {format(dayDate, 'EEEE do')}
                         </div>
@@ -133,7 +133,7 @@ const HabitGrid: React.FC<HabitGridProps> = ({
                       {habits.map((habit, habitIndex) => {
                         const isCompleted = getDayData(day).habits?.[habitIndex];
                         return (
-                          <div key={habitIndex} role="gridcell">
+                          <div key={habitIndex} className={index < habits.length - 1 ? 'border-r border-slate-400' : ''} role="gridcell">
                             <button
                               onClick={() => updateHabit(day, habitIndex, !isCompleted)}
                               className={`
