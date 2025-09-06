@@ -134,17 +134,17 @@ const HabitTracker: React.FC = () => {
             <nav className="flex items-center gap-3" role="navigation" aria-label="Month navigation and settings">
               <button
                 onClick={() => navigateMonth('prev')}
-                className="px-4 py-2 text-slate-600 hover:text-slate-800 hover:bg-slate-100 rounded-lg transition-colors"
+                className="px-4 py-2 bg-indigo-600 text-white rounded-lg shadow-md hover:bg-indigo-700 transition-colors"
                 aria-label="Go to previous month"
               >
-                ← Previous
+                ← Last Month
               </button>
               <button
                 onClick={() => navigateMonth('next')}
-                className="px-4 py-2 text-slate-600 hover:text-slate-800 hover:bg-slate-100 rounded-lg transition-colors"
+                className="px-4 py-2 bg-indigo-600 text-white rounded-lg shadow-md hover:bg-indigo-700 transition-colors"
                 aria-label="Go to next month"
               >
-                Next →
+                Next Month →
               </button>
               <button
                 onClick={() => setShowSettings(!showSettings)}
