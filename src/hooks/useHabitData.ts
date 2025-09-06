@@ -44,9 +44,13 @@ export const useHabitData = () => {
     const savedData = localStorage.getItem('habitTrackerData');
     const savedHabits = localStorage.getItem('habitTrackerHabits');
     
+    let loadedData: HabitData = {};
+    let loadedHabits: Habit[] = defaultHabits;
+    
     if (savedData) {
       try {
-        setData(JSON.parse(savedData));
+        loadedData = JSON.parse(savedData);
+        setData(loadedData);
       } catch (error) {
         console.error('Error loading habit data:', error);
       }
@@ -54,29 +58,28 @@ export const useHabitData = () => {
     
     if (savedHabits) {
       try {
-        setHabits(JSON.parse(savedHabits));
+        loadedHabits = JSON.parse(savedHabits);
+        setHabits(loadedHabits);
       } catch (error) {
         console.error('Error loading habits:', error);
       }
     }
-        
-        // Check if data needs migration (has numeric keys in habits)
-        const needsMigration = Object.values(loadedData).some((monthData: any) =>
-          Object.values(monthData).some((dayData: any) =>
-            dayData.habits && Object.keys(dayData.habits).some(key => !isNaN(parseInt(key)))
-          )
-        );
-        
-        if (needsMigration) {
-          console.log('Migrating habit data from index-based to ID-based...');
-        setIsMigrated(true);
-          loadedData = migrateHabitData(loadedData, loadedHabits);
-          localStorage.setItem('habitTrackerData', JSON.stringify(loadedData));
-        setIsMigrated(true);
-        }
-    } else {
-      setIsMigrated(true);
-        
+    
+    // Check if data needs migration (has numeric keys in habits)
+    const needsMigration = Object.values(loadedData).some((monthData: any) =>
+      Object.values(monthData).some((dayData: any) =>
+        dayData.habits && Object.keys(dayData.habits).some(key => !isNaN(parseInt(key)))
+      )
+    );
+    
+    if (needsMigration) {
+      console.log('Migrating habit data from index-based to ID-based...');
+      loadedData = migrateHabitData(loadedData, loadedHabits);
+      setData(loadedData);
+      localStorage.setItem('habitTrackerData', JSON.stringify(loadedData));
+    }
+    
+    setIsMigrated(true);
   }, []);
 
   const updateData = (newData: HabitData) => {
@@ -93,7 +96,7 @@ export const useHabitData = () => {
     data,
     habits,
     updateData,
-    updateHabits
+    updateHabits,
     isMigrated
   };
 };
