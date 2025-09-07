@@ -14,6 +14,7 @@ export interface DayData {
 export interface MonthData {
   [day: number]: DayData;
   goals?: string[];
+  goalsCompletion?: boolean[];
 }
 
 export interface HabitData {

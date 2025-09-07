@@ -66,12 +66,23 @@ const HabitTracker: React.FC = () => {
     updateData(newData);
   };
 
+  const updateGoalsCompletion = (goals: string[], completion: boolean[]) => {
+    const newData = { ...data };
+    if (!newData[monthKey]) newData[monthKey] = {};
+    newData[monthKey].goals = goals;
+    newData[monthKey].goalsCompletion = completion;
+    updateData(newData);
+  };
+
   const getDayData = (day: number) => {
     return data[monthKey]?.[day] || {};
   };
 
   const getGoals = () => {
-    return data[monthKey]?.goals || ['', '', ''];
+    return {
+      goals: data[monthKey]?.goals || ['', '', ''],
+      completion: data[monthKey]?.goalsCompletion || [false, false, false]
+    };
   };
 
   const renderActiveContent = () => {
@@ -96,10 +107,12 @@ const HabitTracker: React.FC = () => {
           />
         );
       case 'goals':
+        const goalsData = getGoals();
         return (
           <MonthlyGoals
-            goals={getGoals()}
-            onUpdateGoals={updateGoals}
+            goals={goalsData.goals}
+            completedGoals={goalsData.completion}
+            onUpdateGoals={updateGoalsCompletion}
           />
         );
       case 'sleep':

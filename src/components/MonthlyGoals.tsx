@@ -3,24 +3,22 @@ import { Target, Check } from 'lucide-react';
 
 interface MonthlyGoalsProps {
   goals: string[];
-  onUpdateGoals: (goals: string[]) => void;
+  completedGoals: boolean[];
+  onUpdateGoals: (goals: string[], completion: boolean[]) => void;
 }
 
-const MonthlyGoals: React.FC<MonthlyGoalsProps> = ({ goals, onUpdateGoals }) => {
-  const [editingGoals, setEditingGoals] = useState(goals);
-  const [completedGoals, setCompletedGoals] = useState<boolean[]>([false, false, false]);
+const MonthlyGoals: React.FC<MonthlyGoalsProps> = ({ goals, completedGoals, onUpdateGoals }) => {
 
   const handleGoalChange = (index: number, value: string) => {
-    const newGoals = [...editingGoals];
+    const newGoals = [...goals];
     newGoals[index] = value;
-    setEditingGoals(newGoals);
-    onUpdateGoals(newGoals);
+    onUpdateGoals(newGoals, completedGoals);
   };
 
   const toggleGoalCompletion = (index: number) => {
-    const newCompleted = [...completedGoals];
-    newCompleted[index] = !newCompleted[index];
-    setCompletedGoals(newCompleted);
+    const newCompletion = [...completedGoals];
+    newCompletion[index] = !newCompletion[index];
+    onUpdateGoals(goals, newCompletion);
   };
 
   return (
@@ -50,7 +48,7 @@ const MonthlyGoals: React.FC<MonthlyGoalsProps> = ({ goals, onUpdateGoals }) => 
             
             <input
               type="text"
-              value={editingGoals[index] || ''}
+              value={goals[index] || ''}
               onChange={(e) => handleGoalChange(index, e.target.value)}
               placeholder={`Goal ${index + 1}...`}
               className={`
