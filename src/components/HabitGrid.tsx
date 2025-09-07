@@ -1,6 +1,7 @@
 import React from 'react';
 import { CheckSquare, Square, Target } from 'lucide-react';
-import { format, isBefore, startOfDay, subDays, isSameMonth } from 'date-fns';
+import { format } from 'date-fns';
+import { isBefore, startOfDay } from 'date-fns';
 import type { Habit } from '../types';
 
 interface HabitGridProps {
@@ -29,58 +30,22 @@ const HabitGrid: React.FC<HabitGridProps> = ({
     }
   };
 
-  const getFlameMomentum = (habit: Habit) => {
+  const getCompletionRate = (habitIndex: number) => {
+    const habit = habits[habitIndex];
     if (!habit) return 0;
     
-    const today = new Date();
-    const isCurrentMonth = isSameMonth(currentDate, today);
+    let completed = 0;
+    let total = 0;
     
-    // Determine the effective end date for the 7-day window
-    const effectiveEndDate = isCurrentMonth ? today : new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
-    
-    let completionsCount = 0;
-    let gapsCount = 0;
-    let daysWithData = 0;
-    
-    // Check the last 7 days (or fewer if month started recently)
-    for (let i = 0; i < 7; i++) {
-      const checkDate = subDays(effectiveEndDate, i);
-      
-      // Only check days within the current displayed month
-      if (checkDate.getMonth() === currentDate.getMonth() && checkDate.getFullYear() === currentDate.getFullYear()) {
-        const day = checkDate.getDate();
-        const dayData = getDayData(day);
-        
-        if (dayData.habits && dayData.habits[habit.id] !== undefined) {
-          daysWithData++;
-          const isCompleted = dayData.habits[habit.id];
-          
-          // For 'avoid' habits, success is when the habit is NOT checked
-          const isSuccessful = habit.type === 'avoid' ? !isCompleted : isCompleted;
-          
-          if (isSuccessful) {
-            completionsCount++;
-          } else {
-            gapsCount++;
-          }
-        }
+    for (let day = 1; day <= daysInMonth; day++) {
+      const dayData = getDayData(day);
+      if (dayData.habits && dayData.habits[habit.id] !== undefined) {
+        total++;
+        if (dayData.habits[habit.id]) completed++;
       }
     }
     
-    // Calculate consistency multiplier
-    let consistencyMultiplier = 1.0;
-    if (daysWithData > 0) {
-      if (gapsCount === 0) {
-        consistencyMultiplier = 1.2;
-      } else if (gapsCount >= 3) {
-        consistencyMultiplier = 0.8;
-      }
-    }
-    
-    // Calculate momentum: (completions in last 7 days ÷ 7 × 10) × consistency multiplier
-    const momentum = (completionsCount / 7) * 10 * consistencyMultiplier;
-    
-    return momentum;
+    return total > 0 ? Math.round((completed / total) * 100) : 0;
   };
 
   return (
@@ -100,7 +65,7 @@ const HabitGrid: React.FC<HabitGridProps> = ({
           {/* Habit Headers with Progress */}
           <div className="space-y-3 mb-6" role="list" aria-label="Habit progress overview">
             {habits.map((habit, habitIndex) => (
-              <div key={habit.id} className="flex items-center justify-between" role="listitem">
+              <div key={habitIndex} className="flex items-center justify-between" role="listitem">
                 <div className="flex items-center gap-3">
                   <div className={`w-3 h-3 rounded-full ${
                     habit.type === 'critical' ? 'bg-habit-critical-500' :
@@ -110,14 +75,18 @@ const HabitGrid: React.FC<HabitGridProps> = ({
                   <span className="font-medium text-slate-700">{habit.name}</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <div className="flex items-center gap-1">
-                    <span className="text-sm" aria-label={`${habit.flameCount || 10} flame icons for momentum display`}>
-                      {Array(habit.flameCount || 10).fill('🔥').join('')}
-                    </span>
-                    <span className="text-xs font-medium text-slate-700 min-w-[32px] text-right" aria-label={`Momentum multiplier: ${getFlameMomentum(habit).toFixed(1)}`}>
-                      x{getFlameMomentum(habit).toFixed(1)}
-                    </span>
+                  <div className="w-16 bg-slate-200 rounded-full h-2" role="progressbar" aria-valuenow={getCompletionRate(habitIndex)} aria-valuemin={0} aria-valuemax={100} aria-label={`${habit.name} completion rate`}>
+                    <div 
+                      className={`h-2 rounded-full transition-all duration-300 ${
+                        habit.type === 'critical' ? 'bg-habit-critical-500' :
+                        habit.type === 'goal' ? 'bg-habit-goal-500' :
+                        habit.type === 'avoid' ? 'bg-habit-avoid-500' : 'bg-slate-500'
+                      }`}
+                      style={{ width: `${getCompletionRate(habitIndex)}%` }}
+                    ></div>
                   </div>
+                  <span className="text-xs text-slate-500 w-8 text-right" aria-hidden="true">
+                    {getCompletionRate(habitIndex)}%
                   </span>
                 </div>
               </div>
@@ -130,9 +99,9 @@ const HabitGrid: React.FC<HabitGridProps> = ({
             <div className="min-w-full">
               {/* Habit Headers (X-axis) */}
               <div className="grid gap-0 mb-3 divide-x divide-slate-400" style={{ gridTemplateColumns: `150px repeat(${habits.length}, 1fr)` }} role="row">
-                <div className="text-sm font-medium text-slate-500 py-3 px-2 text-center" role="columnheader">Day</div>
+                <div className="text-sm font-medium text-slate-500 py-3 px-2" role="columnheader">Day</div>
                 {habits.map((habit, index) => (
-                  <div key={habit.id} className="text-center text-xs font-medium text-slate-600 py-3 px-0.5" role="columnheader">
+                  <div key={index} className="text-center text-xs font-medium text-slate-600 py-3 px-0.5" role="columnheader">
                     <div className="flex flex-col items-center gap-1">
                       <div className={`w-2 h-2 rounded-full ${
                         habit.type === 'critical' ? 'bg-habit-critical-500' :

@@ -3,7 +3,6 @@ export interface Habit {
   name: string;
   type: 'critical' | 'goal' | 'avoid';
   description?: string;
-  flameCount?: number;
 }
 
 export interface DayData {

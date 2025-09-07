@@ -203,17 +203,6 @@ const HabitSettings: React.FC<HabitSettingsProps> = ({ habits, onUpdateHabits, d
                 <option value="avoid">Avoid</option>
               </select>
               
-              <input
-                type="number"
-                min="1"
-                max="20"
-                value={habit.flameCount || 10}
-                onChange={(e) => updateHabit(index, 'flameCount', parseInt(e.target.value) || 10)}
-                className="w-16 px-2 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-center text-sm"
-                aria-label={`Number of flames for ${habit.name} habit`}
-                title="Number of flames"
-              />
-              
               <button
                 onClick={() => deleteHabit(index)}
                 className="p-2 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors"
@@ -288,9 +277,6 @@ const HabitSettings: React.FC<HabitSettingsProps> = ({ habits, onUpdateHabits, d
           <div className="flex items-center gap-2">
             <div className="w-3 h-3 bg-habit-avoid-500 rounded-full"></div>
             <span><strong>Avoid:</strong> Habits to minimize</span>
-          </div>
-          <div className="mt-3 pt-2 border-t border-slate-200">
-            <span><strong>Flames:</strong> Set 1-20 flames per habit for momentum display</span>
           </div>
         </div>
       </div>
