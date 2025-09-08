@@ -2,11 +2,11 @@ import { useState, useEffect } from 'react';
 import type { Habit, HabitData } from '../types';
 
 const defaultHabits: Habit[] = [
-  { id: '1', name: 'EXERCISE', type: 'goal', description: 'At least 30 minutes of physical activity' },
-  { id: '2', name: 'MEDITATION', type: 'goal', description: 'Mindfulness practice or breathing exercises' },
-  { id: '3', name: 'READING', type: 'goal', description: 'Read for personal growth or entertainment' },
-  { id: '4', name: 'SOCIAL MEDIA', type: 'avoid', description: 'Limit mindless scrolling and consumption' },
-  { id: '5', name: 'WATER INTAKE', type: 'critical', description: 'Stay properly hydrated throughout the day' }
+  { id: '1', name: 'EXERCISE', type: 'goal', description: 'At least 30 minutes of physical activity', flameCount: 3 },
+  { id: '2', name: 'MEDITATION', type: 'goal', description: 'Mindfulness practice or breathing exercises', flameCount: 5 },
+  { id: '3', name: 'READING', type: 'goal', description: 'Read for personal growth or entertainment', flameCount: 2 },
+  { id: '4', name: 'SOCIAL MEDIA', type: 'avoid', description: 'Limit mindless scrolling and consumption', flameCount: 1 },
+  { id: '5', name: 'WATER INTAKE', type: 'critical', description: 'Stay properly hydrated throughout the day', flameCount: 7 }
 ];
 
 // Migration function to convert index-based data to ID-based data

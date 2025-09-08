@@ -1,7 +1,6 @@
 import React from 'react';
-import { CheckSquare, Square, Target } from 'lucide-react';
-import { format } from 'date-fns';
-import { isBefore, startOfDay } from 'date-fns';
+import { CheckSquare, Square, Flame } from 'lucide-react';
+import { format, isBefore, startOfDay, subDays } from 'date-fns';
 import type { Habit } from '../types';
 
 interface HabitGridProps {
@@ -21,24 +20,6 @@ const HabitGrid: React.FC<HabitGridProps> = ({
 }) => {
   const today = startOfDay(new Date());
 
-  const getCompletionRate = (habitIndex: number) => {
-    const habit = habits[habitIndex];
-    if (!habit) return 0;
-    
-    let completed = 0;
-    let total = 0;
-    
-    for (let day = 1; day <= daysInMonth; day++) {
-      const dayData = getDayData(day);
-      if (dayData.habits && dayData.habits[habit.id] !== undefined) {
-        total++;
-        if (dayData.habits[habit.id]) completed++;
-      }
-    }
-    
-    return total > 0 ? Math.round((completed / total) * 100) : 0;
-  };
-
   const getHabitColor = (type: string) => {
     switch (type) {
       case 'critical': return 'text-habit-critical-700 border-habit-critical-300';
@@ -49,38 +30,71 @@ const HabitGrid: React.FC<HabitGridProps> = ({
   };
 
   const getFlameMomentum = (habit: Habit) => {
-    if (!habit) return 0;
+    const flameCount = habit.flameCount || 3;
+    const lookbackDays = Math.min(14, daysInMonth);
+    const recentDays = [];
     
-    let completed = 0;
-    let total = 0;
-    
-    for (let day = 1; day <= daysInMonth; day++) {
-      const dayData = getDayData(day);
-      if (dayData.habits && dayData.habits[habit.id] !== undefined) {
-        total++;
-        if (dayData.habits[habit.id]) completed++;
+    // Get recent days data
+    for (let i = 0; i < lookbackDays; i++) {
+      const day = daysInMonth - i;
+      if (day >= 1) {
+        const dayData = getDayData(day);
+        const isCompleted = dayData.habits?.[habit.id] || false;
+        recentDays.unshift({ day, completed: isCompleted });
       }
     }
     
-    return total > 0 ? Math.round((completed / total) * 100) : 0;
+    if (recentDays.length === 0) return 0;
+    
+    // Calculate base completion rate
+    const completedDays = recentDays.filter(d => d.completed).length;
+    const baseRate = completedDays / recentDays.length;
+    
+    // Calculate streak bonus
+    let currentStreak = 0;
+    for (let i = recentDays.length - 1; i >= 0; i--) {
+      if (recentDays[i].completed) {
+        currentStreak++;
+      } else {
+        break;
+      }
+    }
+    
+    // Calculate consistency bonus (fewer gaps = higher bonus)
+    let gaps = 0;
+    let inStreak = false;
+    for (const day of recentDays) {
+      if (day.completed) {
+        if (!inStreak && gaps > 0) gaps++;
+        inStreak = true;
+      } else {
+        inStreak = false;
+      }
+    }
+    
+    const streakMultiplier = Math.min(1.5, 1 + (currentStreak * 0.1));
+    const consistencyMultiplier = Math.max(0.5, 1 - (gaps * 0.1));
+    
+    const momentum = baseRate * streakMultiplier * consistencyMultiplier;
+    return Math.min(flameCount, Math.round(momentum * flameCount));
   };
 
   return (
     <section className="bg-secondary-bg rounded-2xl shadow-sm border border-slate-200 p-6" aria-labelledby="habits-heading">
       <div className="flex items-center gap-2 mb-6">
-        <Target className="w-5 h-5 text-indigo-600" />
+        <Flame className="w-5 h-5 text-orange-500" />
         <h2 id="habits-heading" className="text-xl font-semibold text-slate-800">Daily Habits</h2>
       </div>
 
       {habits.length === 0 ? (
         <div className="text-center py-12 text-slate-500">
-          <Target className="w-12 h-12 mx-auto mb-4 opacity-50" />
+          <Flame className="w-12 h-12 mx-auto mb-4 opacity-50" />
           <p>No habits yet. Add some habits to start tracking!</p>
         </div>
       ) : (
         <div className="space-y-4">
-          {/* Habit Headers with Progress */}
-          <div className="space-y-3 mb-6" role="list" aria-label="Habit progress overview">
+          {/* Habit Flame Overview */}
+          <div className="space-y-3 mb-6" role="list" aria-label="Habit flame momentum overview">
             {habits.map((habit, habitIndex) => (
               <div key={habitIndex} className="flex items-center justify-between" role="listitem">
                 <div className="flex items-center gap-3">
@@ -92,18 +106,19 @@ const HabitGrid: React.FC<HabitGridProps> = ({
                   <span className="font-medium text-slate-700">{habit.name}</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <div className="w-16 bg-slate-200 rounded-full h-2" role="progressbar" aria-valuenow={getCompletionRate(habitIndex)} aria-valuemin={0} aria-valuemax={100} aria-label={`${habit.name} completion rate`}>
-                    <div 
-                      className={`h-2 rounded-full transition-all duration-300 ${
-                        habit.type === 'critical' ? 'bg-habit-critical-500' :
-                        habit.type === 'goal' ? 'bg-habit-goal-500' :
-                        habit.type === 'avoid' ? 'bg-habit-avoid-500' : 'bg-slate-500'
-                      }`}
-                      style={{ width: `${getCompletionRate(habitIndex)}%` }}
-                    ></div>
+                  <div className="flex items-center gap-1">
+                    {Array.from({ length: habit.flameCount || 3 }, (_, i) => (
+                      <span 
+                        key={i} 
+                        className={`text-sm ${i < getFlameMomentum(habit) ? 'text-orange-500' : 'text-slate-300'}`}
+                        aria-hidden="true"
+                      >
+                        🔥
+                      </span>
+                    ))}
                   </div>
-                  <span className="text-xs text-slate-500 w-8 text-right" aria-hidden="true">
-                    {getCompletionRate(habitIndex)}%
+                  <span className="text-xs text-slate-500 w-12 text-right" aria-label={`${getFlameMomentum(habit)} out of ${habit.flameCount || 3} flames`}>
+                    {getFlameMomentum(habit)}/{habit.flameCount || 3}
                   </span>
                 </div>
               </div>
