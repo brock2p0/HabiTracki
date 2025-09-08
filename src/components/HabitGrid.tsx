@@ -9,7 +9,7 @@ interface HabitGridProps {
   currentDate: Date;
   daysInMonth: number;
   getDayData: (day: number) => any;
-  updateHabit: (day: number, habitIndex: number, value: boolean | number) => void;
+  updateHabit: (day: number, habitId: string, value: boolean | number) => void;
 }
 
 const HabitGrid: React.FC<HabitGridProps> = ({
@@ -30,8 +30,7 @@ const HabitGrid: React.FC<HabitGridProps> = ({
     }
   };
 
-  const getCompletionRate = (habitIndex: number) => {
-    const habit = habits[habitIndex];
+  const getFlameMomentum = (habit: Habit) => {
     if (!habit) return 0;
     
     let completed = 0;
