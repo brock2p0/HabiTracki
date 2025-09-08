@@ -21,6 +21,24 @@ const HabitGrid: React.FC<HabitGridProps> = ({
 }) => {
   const today = startOfDay(new Date());
 
+  const getCompletionRate = (habitIndex: number) => {
+    const habit = habits[habitIndex];
+    if (!habit) return 0;
+    
+    let completed = 0;
+    let total = 0;
+    
+    for (let day = 1; day <= daysInMonth; day++) {
+      const dayData = getDayData(day);
+      if (dayData.habits && dayData.habits[habit.id] !== undefined) {
+        total++;
+        if (dayData.habits[habit.id]) completed++;
+      }
+    }
+    
+    return total > 0 ? Math.round((completed / total) * 100) : 0;
+  };
+
   const getHabitColor = (type: string) => {
     switch (type) {
       case 'critical': return 'text-habit-critical-700 border-habit-critical-300';
