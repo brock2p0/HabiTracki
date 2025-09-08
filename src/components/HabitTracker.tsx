@@ -39,15 +39,12 @@ const HabitTracker: React.FC = () => {
     updateData(newData);
   };
 
-  const updateHabit = (day: number, habitIndex: number, value: boolean | number) => {
-    const habit = habits[habitIndex];
-    if (!habit) return;
-    
+  const updateHabit = (day: number, habitId: string, value: boolean | number) => {
     const newData = { ...data };
     if (!newData[monthKey]) newData[monthKey] = {};
     if (!newData[monthKey][day]) newData[monthKey][day] = {};
     if (!newData[monthKey][day].habits) newData[monthKey][day].habits = {};
-    newData[monthKey][day].habits[habit.id] = value;
+    newData[monthKey][day].habits[habitId] = value;
     updateData(newData);
   };
 

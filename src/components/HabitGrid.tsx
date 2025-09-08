@@ -135,9 +135,9 @@ const HabitGrid: React.FC<HabitGridProps> = ({
                       {habits.map((habit, habitIndex) => {
                         const isCompleted = getDayData(day).habits?.[habit.id];
                         return (
-                          <div key={habitIndex} role="gridcell">
+                          <div key={habit.id} role="gridcell">
                             <button
-                              onClick={() => updateHabit(day, habitIndex, !isCompleted)}
+                              onClick={() => updateHabit(day, habit.id, !isCompleted)}
                               className={`
                                 w-full h-10 rounded-lg border transition-all duration-200 flex items-center justify-center hover:scale-105
                                 ${isCompleted 
