@@ -13,6 +13,9 @@ const defaultHabits: Habit[] = [
 const migrateHabitData = (data: HabitData, habits: Habit[]): HabitData => {
   const migratedData = { ...data };
   
+  // Create a Set of all current valid habit IDs for fast lookup
+  const validHabitIds = new Set(habits.map(habit => habit.id));
+  
   Object.keys(migratedData).forEach(monthKey => {
     const monthData = migratedData[monthKey];
     Object.keys(monthData).forEach(dayKey => {
@@ -20,11 +23,21 @@ const migrateHabitData = (data: HabitData, habits: Habit[]): HabitData => {
         const dayHabits = monthData[dayKey].habits;
         const newHabits: { [habitId: string]: boolean | number } = {};
         
-        // Convert index-based keys to ID-based keys
-        Object.keys(dayHabits).forEach(indexKey => {
-          const index = parseInt(indexKey);
-          if (habits[index]) {
-            newHabits[habits[index].id] = dayHabits[indexKey];
+        // Intelligent migration: preserve valid IDs, convert old position-based data
+        Object.keys(dayHabits).forEach(storedKey => {
+          // First check: Is this already a valid current habit ID?
+          if (validHabitIds.has(storedKey)) {
+            // This is a legitimate habit ID - preserve it exactly as is
+            newHabits[storedKey] = dayHabits[storedKey];
+          } else {
+            // This key is not a current valid habit ID
+            // Check if it looks like old position-based data that can be converted
+            const index = parseInt(storedKey);
+            if (!isNaN(index) && habits[index]) {
+              // This appears to be old index-based data - convert it
+              newHabits[habits[index].id] = dayHabits[storedKey];
+            }
+            // If it's neither a valid ID nor convertible old data, it gets discarded
           }
         });
         
@@ -66,17 +79,24 @@ export const useHabitData = () => {
     }
     
     // Check if data needs migration (has numeric keys in habits)
+    // Create a Set of current valid habit IDs for migration check
+    const currentValidIds = new Set(loadedHabits.map(habit => habit.id));
+    
+    // Check if data needs migration (has keys that are not current valid habit IDs)
     const needsMigration = Object.values(loadedData).some((monthData: any) =>
       Object.values(monthData).some((dayData: any) =>
-        dayData.habits && Object.keys(dayData.habits).some(key => !isNaN(parseInt(key)))
+        dayData.habits && Object.keys(dayData.habits).some(key => !currentValidIds.has(key))
       )
     );
     
     if (needsMigration) {
-      console.log('Migrating habit data from index-based to ID-based...');
+      console.log('Migrating habit data - converting old keys to current valid habit IDs...');
       loadedData = migrateHabitData(loadedData, loadedHabits);
+      console.log('Migration completed, saving updated data to localStorage');
       setData(loadedData);
       localStorage.setItem('habitTrackerData', JSON.stringify(loadedData));
+    } else {
+      console.log('No migration needed - all habit keys are already valid');
     }
     
     setIsMigrated(true);
