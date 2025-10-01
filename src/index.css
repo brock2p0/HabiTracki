@@ -2,6 +2,28 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Mobile PWA optimizations */
+html {
+  scroll-padding-top: 108px; /* 60px header + 48px column headers */
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Touch target expansion for mobile grid cells */
+.touch-target-expand {
+  position: relative;
+}
+
+.touch-target-expand::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 44px;
+  height: 44px;
+  z-index: 1;
+}
+
 /* Screen reader only content */
 .sr-only {
   position: absolute;

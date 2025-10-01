@@ -1,5 +1,5 @@
 import React from 'react';
-import { CheckSquare, Square, Flame } from 'lucide-react';
+import { CheckSquare, Square, Flame, Info } from 'lucide-react';
 import { format, isBefore, startOfDay, subDays } from 'date-fns';
 import type { Habit } from '../types';
 
@@ -9,6 +9,7 @@ interface HabitGridProps {
   daysInMonth: number;
   getDayData: (day: number) => any;
   updateHabit: (day: number, habitId: string, value: boolean | number) => void;
+  isMobile?: boolean;
 }
 
 const HabitGrid: React.FC<HabitGridProps> = ({
@@ -16,8 +17,12 @@ const HabitGrid: React.FC<HabitGridProps> = ({
   currentDate,
   daysInMonth,
   getDayData,
-  updateHabit
+  updateHabit,
+  isMobile = false
 }) => {
+  const [tooltipVisible, setTooltipVisible] = React.useState<number | null>(null);
+  const [tooltipTimeout, setTooltipTimeout] = React.useState<NodeJS.Timeout | null>(null);
+
   const today = startOfDay(new Date());
 
   const getHabitColor = (type: string) => {
@@ -29,12 +34,40 @@ const HabitGrid: React.FC<HabitGridProps> = ({
     }
   };
 
+  const showTooltip = (habitIndex: number) => {
+    if (tooltipTimeout) {
+      clearTimeout(tooltipTimeout);
+    }
+    setTooltipVisible(habitIndex);
+    
+    const timeout = setTimeout(() => {
+      setTooltipVisible(null);
+    }, 2000);
+    setTooltipTimeout(timeout);
+  };
+
+  const hideTooltip = () => {
+    if (tooltipTimeout) {
+      clearTimeout(tooltipTimeout);
+    }
+    setTooltipVisible(null);
+  };
+
+  React.useEffect(() => {
+    return () => {
+      if (tooltipTimeout) {
+        clearTimeout(tooltipTimeout);
+      }
+    };
+  }, [tooltipTimeout]);
+
   const getFlameMomentum = (habit: Habit) => {
+    if (isMobile) return 0; // Skip flame calculation on mobile
+    
     const flameCount = habit.flameCount || 3;
     const lookbackDays = Math.min(14, daysInMonth);
     const recentDays = [];
     
-    // Get recent days data
     for (let i = 0; i < lookbackDays; i++) {
       const day = daysInMonth - i;
       if (day >= 1) {
@@ -46,45 +79,20 @@ const HabitGrid: React.FC<HabitGridProps> = ({
     
     if (recentDays.length === 0) return 0;
     
-    // Calculate base completion rate
     const completedDays = recentDays.filter(d => d.completed).length;
     const baseRate = completedDays / recentDays.length;
-    
-    // Calculate streak bonus
-    let currentStreak = 0;
-    for (let i = recentDays.length - 1; i >= 0; i--) {
-      if (recentDays[i].completed) {
-        currentStreak++;
-      } else {
-        break;
-      }
-    }
-    
-    // Calculate consistency bonus (fewer gaps = higher bonus)
-    let gaps = 0;
-    let inStreak = false;
-    for (const day of recentDays) {
-      if (day.completed) {
-        if (!inStreak && gaps > 0) gaps++;
-        inStreak = true;
-      } else {
-        inStreak = false;
-      }
-    }
-    
-    const streakMultiplier = Math.min(1.5, 1 + (currentStreak * 0.1));
-    const consistencyMultiplier = Math.max(0.5, 1 - (gaps * 0.1));
-    
-    const momentum = baseRate * streakMultiplier * consistencyMultiplier;
+    const momentum = baseRate;
     return Math.min(flameCount, Math.round(momentum * flameCount));
   };
 
   return (
-    <section className="bg-secondary-bg rounded-2xl shadow-sm border border-slate-200 p-6" aria-labelledby="habits-heading">
-      <div className="flex items-center gap-2 mb-6">
-        <Flame className="w-5 h-5 text-orange-500" />
-        <h2 id="habits-heading" className="text-xl font-semibold text-slate-800">Daily Habits</h2>
-      </div>
+    <section className={`bg-secondary-bg ${isMobile ? '' : 'rounded-2xl'} shadow-sm border border-slate-200 ${isMobile ? 'p-2' : 'p-6'}`} aria-labelledby="habits-heading">
+      {!isMobile && (
+        <div className="flex items-center gap-2 mb-6">
+          <Flame className="w-5 h-5 text-orange-500" />
+          <h2 id="habits-heading" className="text-xl font-semibold text-slate-800">Daily Habits</h2>
+        </div>
+      )}
 
       {habits.length === 0 ? (
         <div className="text-center py-12 text-slate-500">
@@ -93,55 +101,87 @@ const HabitGrid: React.FC<HabitGridProps> = ({
         </div>
       ) : (
         <div className="space-y-4">
-          {/* Habit Flame Overview */}
-          <div className="space-y-3 mb-6" role="list" aria-label="Habit flame momentum overview">
-            {habits.map((habit, habitIndex) => (
-              <div key={habitIndex} className="flex items-center justify-between" role="listitem">
-                <div className="flex items-center gap-3">
-                  <div className={`w-3 h-3 rounded-full ${
-                    habit.type === 'critical' ? 'bg-habit-critical-500' :
-                    habit.type === 'goal' ? 'bg-habit-goal-500' :
-                    habit.type === 'avoid' ? 'bg-habit-avoid-500' : 'bg-slate-500'
-                  }`}></div>
-                  <span className="font-medium text-slate-700">{habit.name}</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="flex items-center gap-1">
-                    {Array.from({ length: habit.flameCount || 3 }, (_, i) => (
-                      <span 
-                        key={i} 
-                        className={`text-sm ${i < getFlameMomentum(habit) ? 'text-orange-500' : 'text-slate-300'}`}
-                        aria-hidden="true"
-                      >
-                        🔥
-                      </span>
-                    ))}
+          {/* Habit Flame Overview - Desktop Only */}
+          {!isMobile && (
+            <div className="space-y-3 mb-6" role="list" aria-label="Habit flame momentum overview">
+              {habits.map((habit, habitIndex) => (
+                <div key={habitIndex} className="flex items-center justify-between" role="listitem">
+                  <div className="flex items-center gap-3">
+                    <div className={`w-3 h-3 rounded-full ${
+                      habit.type === 'critical' ? 'bg-habit-critical-500' :
+                      habit.type === 'goal' ? 'bg-habit-goal-500' :
+                      habit.type === 'avoid' ? 'bg-habit-avoid-500' : 'bg-slate-500'
+                    }`}></div>
+                    <span className="font-medium text-slate-700">{habit.name}</span>
                   </div>
-                  <span className="text-xs text-slate-500 w-12 text-right" aria-label={`${getFlameMomentum(habit)} out of ${habit.flameCount || 3} flames`}>
-                    {getFlameMomentum(habit)}/{habit.flameCount || 3}
-                  </span>
+                  <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-1">
+                      {Array.from({ length: habit.flameCount || 3 }, (_, i) => (
+                        <span 
+                          key={i} 
+                          className={`text-sm ${i < getFlameMomentum(habit) ? 'text-orange-500' : 'text-slate-300'}`}
+                          aria-hidden="true"
+                        >
+                          🔥
+                        </span>
+                      ))}
+                    </div>
+                    <span className="text-xs text-slate-500 w-12 text-right" aria-label={`${getFlameMomentum(habit)} out of ${habit.flameCount || 3} flames`}>
+                      {getFlameMomentum(habit)}/{habit.flameCount || 3}
+                    </span>
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
 
           {/* Habit Grid */}
           <div className="overflow-auto" role="region" aria-labelledby="habit-grid-label">
             <h3 id="habit-grid-label" className="sr-only">Daily habit completion grid</h3>
             <div className="min-w-full">
               {/* Habit Headers (X-axis) */}
-              <div className="grid gap-0 mb-3 divide-x divide-slate-400" style={{ gridTemplateColumns: `150px repeat(${habits.length}, 1fr)` }} role="row">
-                <div className="text-sm font-medium text-slate-500 py-3 px-2" role="columnheader">Day</div>
+              <div 
+                className={`grid gap-0 mb-3 divide-x divide-slate-400 ${isMobile ? 'sticky top-15 z-10 bg-white border-b border-slate-200' : ''}`} 
+                style={{ gridTemplateColumns: isMobile ? `44px repeat(${Math.min(habits.length, 9)}, 33px)` : `150px repeat(${habits.length}, 1fr)` }} 
+                role="row"
+              >
+                <div className={`text-sm font-medium text-slate-500 ${isMobile ? 'py-2 px-1 text-xs bg-slate-100' : 'py-3 px-2'}`} role="columnheader">
+                  {isMobile ? 'Day' : 'Day'}
+                </div>
                 {habits.map((habit, index) => (
-                  <div key={index} className="text-center text-xs font-medium text-slate-600 py-3 px-0.5" role="columnheader">
+                  <div 
+                    key={index} 
+                    className={`text-center text-xs font-medium text-slate-600 ${isMobile ? 'py-2 px-0.5 relative' : 'py-3 px-0.5'}`} 
+                    role="columnheader"
+                  >
                     <div className="flex flex-col items-center gap-1">
-                      <div className={`w-2 h-2 rounded-full ${
+                      <div className={`${isMobile ? 'w-1.5 h-1.5' : 'w-2 h-2'} rounded-full ${
                         habit.type === 'critical' ? 'bg-habit-critical-500' :
                         habit.type === 'goal' ? 'bg-habit-goal-500' :
                         habit.type === 'avoid' ? 'bg-habit-avoid-500' : 'bg-slate-500'
                       }`}></div>
-                      <span className="leading-tight">{habit.name}</span>
+                      {isMobile ? (
+                        <button
+                          onClick={() => showTooltip(index)}
+                          onMouseEnter={() => !isMobile && showTooltip(index)}
+                          onMouseLeave={() => !isMobile && hideTooltip()}
+                          className="leading-tight hover:text-slate-800 transition-colors"
+                          aria-label={`${habit.name} - tap for full name`}
+                        >
+                          {habit.abbreviation || habit.name.substring(0, 2)}
+                        </button>
+                      ) : (
+                        <span className="leading-tight">{habit.name}</span>
+                      )}
                     </div>
+                    
+                    {/* Tooltip */}
+                    {tooltipVisible === index && (
+                      <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-1 z-20 bg-slate-800 text-white text-xs px-2 py-1 rounded shadow-lg whitespace-nowrap">
+                        {habit.name}
+                        <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-b-slate-800"></div>
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
@@ -157,12 +197,17 @@ const HabitGrid: React.FC<HabitGridProps> = ({
                   const isPastDay = isBefore(dayDate, today);
                   
                   return (
-                    <div key={day} className="grid gap-0 divide-x divide-slate-400" style={{ gridTemplateColumns: `150px repeat(${habits.length}, 1fr)` }} role="row">
-                      <div className={`text-xs font-medium py-2 px-2 text-center rounded-md ${
+                    <div 
+                      key={day} 
+                      className="grid gap-0 divide-x divide-slate-400" 
+                      style={{ gridTemplateColumns: isMobile ? `44px repeat(${Math.min(habits.length, 9)}, 33px)` : `150px repeat(${habits.length}, 1fr)` }} 
+                      role="row"
+                    >
+                      <div className={`text-xs font-medium py-2 px-2 text-center ${isMobile ? 'bg-slate-100' : 'rounded-md'} ${
                         isToday ? 'bg-indigo-100 text-indigo-700 font-bold' : 'text-slate-600'
-                      } text-left`} role="rowheader">
+                      } ${isMobile ? 'text-center' : 'text-left'}`} role="rowheader">
                         <div className={isPastDay ? 'line-through' : ''}>
-                          {format(dayDate, 'EEEE do')}
+                          {isMobile ? day : format(dayDate, 'EEEE do')}
                         </div>
                       </div>
                       {habits.map((habit, habitIndex) => {
@@ -172,7 +217,7 @@ const HabitGrid: React.FC<HabitGridProps> = ({
                             <button
                               onClick={() => updateHabit(day, habit.id, !isCompleted)}
                               className={`
-                                w-full h-10 rounded-lg border transition-all duration-200 flex items-center justify-center hover:scale-105
+                                ${isMobile ? 'w-11 h-11 touch-target-expand' : 'w-full h-10'} rounded-lg border transition-all duration-200 flex items-center justify-center hover:scale-105
                                 ${isCompleted 
                                   ? habit.type === 'critical' ? 'border-habit-critical-300 bg-habit-critical-50 text-habit-critical-700' :
                                     habit.type === 'goal' ? 'border-habit-goal-300 bg-habit-goal-50 text-habit-goal-600' :
@@ -184,9 +229,9 @@ const HabitGrid: React.FC<HabitGridProps> = ({
                               aria-pressed={isCompleted}
                             >
                               {isCompleted ? (
-                                <CheckSquare className="w-4 h-4" />
+                                <CheckSquare className={`${isMobile ? 'w-3 h-3' : 'w-4 h-4'}`} />
                               ) : (
-                                <Square className="w-4 h-4 opacity-50" />
+                                <Square className={`${isMobile ? 'w-3 h-3' : 'w-4 h-4'} opacity-50`} />
                               )}
                             </button>
                           </div>
@@ -199,36 +244,38 @@ const HabitGrid: React.FC<HabitGridProps> = ({
             </div>
           </div>
 
-          {/* Habit Descriptions */}
-          <div className="mt-8 space-y-4" role="region" aria-labelledby="habit-descriptions">
-            <h3 id="habit-descriptions" className="text-lg font-semibold text-slate-800 mb-4">Habit Definitions</h3>
-            <div className="grid gap-4">
-              {habits.map((habit, index) => (
-                <div key={habit.id} className="bg-white rounded-lg p-4 border border-slate-200">
-                  <div className="flex items-center gap-3 mb-2">
-                    <div className={`w-3 h-3 rounded-full ${
-                      habit.type === 'critical' ? 'bg-habit-critical-500' :
-                      habit.type === 'goal' ? 'bg-habit-goal-500' :
-                      habit.type === 'avoid' ? 'bg-habit-avoid-500' : 'bg-slate-500'
-                    }`}></div>
-                    <h4 className="font-medium text-slate-700">{habit.name}</h4>
-                    <span className={`px-2 py-1 text-xs rounded-full ${
-                      habit.type === 'critical' ? 'bg-habit-critical-100 text-habit-critical-700' :
-                      habit.type === 'goal' ? 'bg-habit-goal-100 text-habit-goal-700' :
-                      habit.type === 'avoid' ? 'bg-habit-avoid-100 text-habit-avoid-700' : 'bg-slate-100 text-slate-700'
-                    }`}>
-                      {habit.type}
-                    </span>
+          {/* Habit Descriptions - Desktop Only */}
+          {!isMobile && (
+            <div className="mt-8 space-y-4" role="region" aria-labelledby="habit-descriptions">
+              <h3 id="habit-descriptions" className="text-lg font-semibold text-slate-800 mb-4">Habit Definitions</h3>
+              <div className="grid gap-4">
+                {habits.map((habit, index) => (
+                  <div key={habit.id} className="bg-white rounded-lg p-4 border border-slate-200">
+                    <div className="flex items-center gap-3 mb-2">
+                      <div className={`w-3 h-3 rounded-full ${
+                        habit.type === 'critical' ? 'bg-habit-critical-500' :
+                        habit.type === 'goal' ? 'bg-habit-goal-500' :
+                        habit.type === 'avoid' ? 'bg-habit-avoid-500' : 'bg-slate-500'
+                      }`}></div>
+                      <h4 className="font-medium text-slate-700">{habit.name}</h4>
+                      <span className={`px-2 py-1 text-xs rounded-full ${
+                        habit.type === 'critical' ? 'bg-habit-critical-100 text-habit-critical-700' :
+                        habit.type === 'goal' ? 'bg-habit-goal-100 text-habit-goal-700' :
+                        habit.type === 'avoid' ? 'bg-habit-avoid-100 text-habit-avoid-700' : 'bg-slate-100 text-slate-700'
+                      }`}>
+                        {habit.type}
+                      </span>
+                    </div>
+                    {habit.description ? (
+                      <p className="text-sm text-slate-600 leading-relaxed">{habit.description}</p>
+                    ) : (
+                      <p className="text-sm text-slate-400 italic">No description provided. Add one in settings to clarify what this habit means to you.</p>
+                    )}
                   </div>
-                  {habit.description ? (
-                    <p className="text-sm text-slate-600 leading-relaxed">{habit.description}</p>
-                  ) : (
-                    <p className="text-sm text-slate-400 italic">No description provided. Add one in settings to clarify what this habit means to you.</p>
-                  )}
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
-          </div>
+          )}
         </div>
       )}
     </section>

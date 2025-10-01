@@ -2,11 +2,15 @@ import { useState, useEffect } from 'react';
 import type { Habit, HabitData } from '../types';
 
 const defaultHabits: Habit[] = [
-  { id: '1', name: 'EXERCISE', type: 'goal', description: 'At least 30 minutes of physical activity', flameCount: 3 },
-  { id: '2', name: 'MEDITATION', type: 'goal', description: 'Mindfulness practice or breathing exercises', flameCount: 5 },
-  { id: '3', name: 'READING', type: 'goal', description: 'Read for personal growth or entertainment', flameCount: 2 },
-  { id: '4', name: 'SOCIAL MEDIA', type: 'avoid', description: 'Limit mindless scrolling and consumption', flameCount: 1 },
-  { id: '5', name: 'WATER INTAKE', type: 'critical', description: 'Stay properly hydrated throughout the day', flameCount: 7 }
+  { id: '1', name: 'DAILY PRAYERS', abbreviation: 'PR', type: 'critical', description: 'Complete daily prayer routine', flameCount: 5 },
+  { id: '2', name: 'WALKING 30MIN', abbreviation: 'WK', type: 'goal', description: 'Walk for at least 30 minutes', flameCount: 3 },
+  { id: '3', name: 'SOCIAL MEDIA', abbreviation: 'SM', type: 'avoid', description: 'Limit mindless scrolling and consumption', flameCount: 1 },
+  { id: '4', name: 'OVERSLEEPING', abbreviation: 'SL', type: 'avoid', description: 'Avoid sleeping past intended wake time', flameCount: 2 },
+  { id: '5', name: 'EXERCISE', abbreviation: 'EX', type: 'goal', description: 'At least 30 minutes of physical activity', flameCount: 4 },
+  { id: '6', name: 'READING', abbreviation: 'RD', type: 'goal', description: 'Read for personal growth or entertainment', flameCount: 3 },
+  { id: '7', name: 'SELFCARE', abbreviation: 'SC', type: 'goal', description: 'Personal care and wellness activities', flameCount: 2 },
+  { id: '8', name: 'QURAN TIME', abbreviation: 'QU', type: 'critical', description: 'Daily Quran reading and reflection', flameCount: 5 },
+  { id: '9', name: 'DEEPWORK SESSION', abbreviation: 'DW', type: 'goal', description: 'Focused work session without distractions', flameCount: 4 }
 ];
 
 // Migration function to convert index-based data to ID-based data

@@ -8,9 +8,10 @@ interface HabitSettingsProps {
   data: any;
   onUpdateData: (data: any) => void;
   onClose: () => void;
+  isMobile?: boolean;
 }
 
-const HabitSettings: React.FC<HabitSettingsProps> = ({ habits, onUpdateHabits, data, onUpdateData, onClose }) => {
+const HabitSettings: React.FC<HabitSettingsProps> = ({ habits, onUpdateHabits, data, onUpdateData, onClose, isMobile = false }) => {
   const [editingHabits, setEditingHabits] = useState([...habits]);
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
 
@@ -18,6 +19,7 @@ const HabitSettings: React.FC<HabitSettingsProps> = ({ habits, onUpdateHabits, d
     const newHabit: Habit = {
       id: Date.now().toString(),
       name: 'NEW HABIT',
+      abbreviation: 'NH',
       type: 'goal',
       description: ''
     };
@@ -152,9 +154,10 @@ const HabitSettings: React.FC<HabitSettingsProps> = ({ habits, onUpdateHabits, d
     // Reset the input value so the same file can be imported again
     event.target.value = '';
   };
+
   return (
-    <section className="bg-secondary-bg rounded-2xl shadow-sm border border-slate-200 p-6 mb-6" role="dialog" aria-labelledby="settings-heading" aria-modal="false">
-      <div className="flex items-center justify-between mb-6">
+    <section className={`bg-secondary-bg ${isMobile ? 'h-full overflow-y-auto' : 'rounded-2xl mb-6'} shadow-sm border border-slate-200 ${isMobile ? 'p-4' : 'p-6'}`} role="dialog" aria-labelledby="settings-heading" aria-modal={isMobile}>
+      <div className={`flex items-center justify-between ${isMobile ? 'mb-4' : 'mb-6'}`}>
         <h2 id="settings-heading" className="text-xl font-semibold text-slate-800">Customize Habits</h2>
         <button
           onClick={onClose}
@@ -165,7 +168,7 @@ const HabitSettings: React.FC<HabitSettingsProps> = ({ habits, onUpdateHabits, d
         </button>
       </div>
 
-      <div className="space-y-3 mb-6" role="list" aria-label="Habit configuration list">
+      <div className={`space-y-3 ${isMobile ? 'mb-4' : 'mb-6'}`} role="list" aria-label="Habit configuration list">
         {editingHabits.map((habit, index) => (
           <div
             key={habit.id} 
@@ -178,7 +181,7 @@ const HabitSettings: React.FC<HabitSettingsProps> = ({ habits, onUpdateHabits, d
             onDrop={(e) => handleDrop(e, index)}
             onDragEnd={handleDragEnd}
           >
-            <div className="flex items-center gap-3 mb-3">
+            <div className={`flex items-center gap-2 ${isMobile ? 'mb-2' : 'mb-3'}`}>
               <button className="text-slate-400 hover:text-slate-600 cursor-grab active:cursor-grabbing" aria-label={`Reorder ${habit.name} habit`}>
                 <GripVertical className="w-4 h-4" />
               </button>
@@ -187,15 +190,26 @@ const HabitSettings: React.FC<HabitSettingsProps> = ({ habits, onUpdateHabits, d
                 type="text"
                 value={habit.name}
                 onChange={(e) => updateHabit(index, 'name', e.target.value.toUpperCase())}
-                className="flex-1 px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                className={`flex-1 px-2 py-1 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent ${isMobile ? 'text-sm' : ''}`}
                 placeholder="Habit name..."
                 aria-label={`Habit ${index + 1} name`}
+              />
+              
+              <input
+                type="text"
+                value={habit.abbreviation || ''}
+                onChange={(e) => updateHabit(index, 'abbreviation', e.target.value.toUpperCase().substring(0, 2))}
+                className={`w-12 px-1 py-1 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-center ${isMobile ? 'text-xs' : 'text-sm'}`}
+                placeholder="AB"
+                maxLength={2}
+                aria-label={`Habit ${index + 1} abbreviation`}
+                title="2-letter abbreviation for mobile view"
               />
               
               <select
                 value={habit.type}
                 onChange={(e) => updateHabit(index, 'type', e.target.value)}
-                className={`px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent ${getTypeColor(habit.type)}`}
+                className={`px-2 py-1 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent ${getTypeColor(habit.type)} ${isMobile ? 'text-xs' : ''}`}
                 aria-label={`Habit ${index + 1} type`}
               >
                 <option value="critical">Critical</option>
@@ -203,16 +217,18 @@ const HabitSettings: React.FC<HabitSettingsProps> = ({ habits, onUpdateHabits, d
                 <option value="avoid">Avoid</option>
               </select>
               
-              <input
-                type="number"
-                min="1"
-                max="10"
-                value={habit.flameCount || 3}
-                onChange={(e) => updateHabit(index, 'flameCount', parseInt(e.target.value) || 3)}
-                className="w-16 px-2 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-center"
-                aria-label={`Flame count for ${habit.name} habit`}
-                title="Number of flames for this habit"
-              />
+              {!isMobile && (
+                <input
+                  type="number"
+                  min="1"
+                  max="10"
+                  value={habit.flameCount || 3}
+                  onChange={(e) => updateHabit(index, 'flameCount', parseInt(e.target.value) || 3)}
+                  className="w-16 px-2 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-center"
+                  aria-label={`Flame count for ${habit.name} habit`}
+                  title="Number of flames for this habit"
+                />
+              )}
               
               <button
                 onClick={() => deleteHabit(index)}
@@ -226,9 +242,9 @@ const HabitSettings: React.FC<HabitSettingsProps> = ({ habits, onUpdateHabits, d
             <textarea
               value={habit.description || ''}
               onChange={(e) => updateHabit(index, 'description', e.target.value)}
-              className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm resize-y"
+              className={`w-full px-2 py-1 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent resize-y ${isMobile ? 'text-xs' : 'text-sm'}`}
               placeholder="Describe what this habit means to you and how you define completion..."
-              rows={2}
+              rows={isMobile ? 1 : 2}
               maxLength={300}
               aria-label={`Description for ${habit.name} habit`}
             />
@@ -238,7 +254,7 @@ const HabitSettings: React.FC<HabitSettingsProps> = ({ habits, onUpdateHabits, d
 
       <button
         onClick={addHabit}
-        className="w-full flex items-center justify-center gap-2 p-3 border-2 border-dashed border-slate-300 rounded-lg text-slate-600 hover:border-slate-400 hover:text-slate-800 transition-colors"
+        className={`w-full flex items-center justify-center gap-2 ${isMobile ? 'p-2' : 'p-3'} border-2 border-dashed border-slate-300 rounded-lg text-slate-600 hover:border-slate-400 hover:text-slate-800 transition-colors`}
         aria-label="Add new habit"
       >
         <Plus className="w-4 h-4" />
@@ -246,19 +262,19 @@ const HabitSettings: React.FC<HabitSettingsProps> = ({ habits, onUpdateHabits, d
       </button>
 
       {/* Import/Export Section */}
-      <div className="mt-6 pt-6 border-t border-slate-200" role="region" aria-labelledby="data-management">
+      <div className={`${isMobile ? 'mt-4 pt-4' : 'mt-6 pt-6'} border-t border-slate-200`} role="region" aria-labelledby="data-management">
         <h3 id="data-management" className="text-sm font-medium text-slate-700 mb-4">Data Management</h3>
-        <div className="flex gap-3">
+        <div className={`flex gap-3 ${isMobile ? 'flex-col' : ''}`}>
           <button
             onClick={exportData}
-            className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+            className={`flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors ${isMobile ? 'justify-center' : ''}`}
             aria-label="Export all habit data"
           >
             <Download className="w-4 h-4" />
             Export Data
           </button>
           
-          <label className="flex items-center gap-2 px-4 py-2 bg-slate-600 text-white rounded-lg hover:bg-slate-700 transition-colors cursor-pointer">
+          <label className={`flex items-center gap-2 px-4 py-2 bg-slate-600 text-white rounded-lg hover:bg-slate-700 transition-colors cursor-pointer ${isMobile ? 'justify-center' : ''}`}>
             <Upload className="w-4 h-4" />
             Import Data
             <input
@@ -270,11 +286,47 @@ const HabitSettings: React.FC<HabitSettingsProps> = ({ habits, onUpdateHabits, d
             />
           </label>
         </div>
-        <p className="text-xs text-slate-500 mt-2">
+        <p className={`text-xs text-slate-500 mt-2 ${isMobile ? 'text-center' : ''}`}>
           Export your data to backup or transfer to another device. Import previously exported data to restore your habits and progress.
         </p>
       </div>
-      <div className="mt-6 p-4 bg-slate-50 rounded-lg" role="region" aria-labelledby="habit-types-info">
+
+      {/* Column Display Mode Setting - Mobile Only */}
+      {isMobile && (
+        <div className="mt-4 pt-4 border-t border-slate-200" role="region" aria-labelledby="display-mode">
+          <h3 id="display-mode" className="text-sm font-medium text-slate-700 mb-3">Column Display Mode</h3>
+          <div className="space-y-2">
+            <label className="flex items-center gap-2">
+              <input
+                type="radio"
+                name="displayMode"
+                value="compact"
+                defaultChecked
+                className="text-indigo-600 focus:ring-indigo-500"
+              />
+              <div>
+                <div className="text-sm font-medium">Compact View</div>
+                <div className="text-xs text-slate-500">Show all habits, tighter touch targets</div>
+              </div>
+            </label>
+            <label className="flex items-center gap-2 opacity-50">
+              <input
+                type="radio"
+                name="displayMode"
+                value="comfortable"
+                disabled
+                className="text-indigo-600 focus:ring-indigo-500"
+              />
+              <div>
+                <div className="text-sm font-medium">Comfortable View</div>
+                <div className="text-xs text-slate-500">Premium touch targets, horizontal scroll (Coming Soon)</div>
+              </div>
+            </label>
+          </div>
+        </div>
+      )}
+
+      <div className={`${isMobile ? 'mt-4' : 'mt-6'} p-4 bg-slate-50 rounded-lg`} role="region" aria-labelledby="habit-types-info">
         <h3 id="habit-types-info" className="text-sm font-medium text-slate-700 mb-2">Habit Types</h3>
         <div className="space-y-2 text-xs">
           <div className="flex items-center gap-2">
@@ -289,10 +341,18 @@ const HabitSettings: React.FC<HabitSettingsProps> = ({ habits, onUpdateHabits, d
             <div className="w-3 h-3 bg-habit-avoid-500 rounded-full"></div>
             <span><strong>Avoid:</strong> Habits to minimize</span>
           </div>
-          <div className="flex items-center gap-2 mt-3 pt-2 border-t border-slate-300">
-            <span className="text-orange-500">🔥</span>
-            <span><strong>Flame Count:</strong> Number of flames each habit can earn (1-10)</span>
-          </div>
+          {!isMobile && (
+            <div className="flex items-center gap-2 mt-3 pt-2 border-t border-slate-300">
+              <span className="text-orange-500">🔥</span>
+              <span><strong>Flame Count:</strong> Number of flames each habit can earn (1-10)</span>
+            </div>
+          )}
+          {isMobile && (
+            <div className="flex items-center gap-2 mt-3 pt-2 border-t border-slate-300">
+              <span className="text-indigo-500">AB</span>
+              <span><strong>Abbreviation:</strong> 2-letter code shown in mobile grid headers</span>
+            </div>
+          )}
         </div>
       </div>
     </section>

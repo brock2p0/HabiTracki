@@ -1,6 +1,7 @@
 export interface Habit {
   id: string;
   name: string;
+  abbreviation?: string;
   type: 'critical' | 'goal' | 'avoid';
   description?: string;
   flameCount?: number;
