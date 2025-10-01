@@ -101,40 +101,6 @@ const HabitGrid: React.FC<HabitGridProps> = ({
         </div>
       ) : (
         <div className="space-y-4">
-          {/* Habit Flame Overview - Desktop Only */}
-          {!isMobile && (
-            <div className="space-y-3 mb-6" role="list" aria-label="Habit flame momentum overview">
-              {habits.map((habit, habitIndex) => (
-                <div key={habitIndex} className="flex items-center justify-between" role="listitem">
-                  <div className="flex items-center gap-3">
-                    <div className={`w-3 h-3 rounded-full ${
-                      habit.type === 'critical' ? 'bg-habit-critical-500' :
-                      habit.type === 'goal' ? 'bg-habit-goal-500' :
-                      habit.type === 'avoid' ? 'bg-habit-avoid-500' : 'bg-slate-500'
-                    }`}></div>
-                    <span className="font-medium text-slate-700">{habit.name}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <div className="flex items-center gap-1">
-                      {Array.from({ length: habit.flameCount || 3 }, (_, i) => (
-                        <span 
-                          key={i} 
-                          className={`text-sm ${i < getFlameMomentum(habit) ? 'text-orange-500' : 'text-slate-300'}`}
-                          aria-hidden="true"
-                        >
-                          🔥
-                        </span>
-                      ))}
-                    </div>
-                    <span className="text-xs text-slate-500 w-12 text-right" aria-label={`${getFlameMomentum(habit)} out of ${habit.flameCount || 3} flames`}>
-                      {getFlameMomentum(habit)}/{habit.flameCount || 3}
-                    </span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-
           {/* Habit Grid */}
           <div className="overflow-hidden px-1" role="region" aria-labelledby="habit-grid-label">
             <h3 id="habit-grid-label" className="sr-only">Daily habit completion grid</h3>
@@ -243,39 +209,6 @@ const HabitGrid: React.FC<HabitGridProps> = ({
               </div>
             </div>
           </div>
-
-          {/* Habit Descriptions - Desktop Only */}
-          {!isMobile && (
-            <div className="mt-8 space-y-4" role="region" aria-labelledby="habit-descriptions">
-              <h3 id="habit-descriptions" className="text-lg font-semibold text-slate-800 mb-4">Habit Definitions</h3>
-              <div className="grid gap-4">
-                {habits.map((habit, index) => (
-                  <div key={habit.id} className="bg-white rounded-lg p-4 border border-slate-200">
-                    <div className="flex items-center gap-3 mb-2">
-                      <div className={`w-3 h-3 rounded-full ${
-                        habit.type === 'critical' ? 'bg-habit-critical-500' :
-                        habit.type === 'goal' ? 'bg-habit-goal-500' :
-                        habit.type === 'avoid' ? 'bg-habit-avoid-500' : 'bg-slate-500'
-                      }`}></div>
-                      <h4 className="font-medium text-slate-700">{habit.name}</h4>
-                      <span className={`px-2 py-1 text-xs rounded-full ${
-                        habit.type === 'critical' ? 'bg-habit-critical-100 text-habit-critical-700' :
-                        habit.type === 'goal' ? 'bg-habit-goal-100 text-habit-goal-700' :
-                        habit.type === 'avoid' ? 'bg-habit-avoid-100 text-habit-avoid-700' : 'bg-slate-100 text-slate-700'
-                      }`}>
-                        {habit.type}
-                      </span>
-                    </div>
-                    {habit.description ? (
-                      <p className="text-sm text-slate-600 leading-relaxed">{habit.description}</p>
-                    ) : (
-                      <p className="text-sm text-slate-400 italic">No description provided. Add one in settings to clarify what this habit means to you.</p>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
         </div>
       )}
     </section>
