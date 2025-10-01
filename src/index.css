@@ -6,6 +6,23 @@
 html {
   scroll-padding-top: 108px; /* 60px header + 48px column headers */
   -webkit-overflow-scrolling: touch;
+  overflow-x: hidden; /* Prevent horizontal scroll on mobile */
+}
+
+body {
+  overflow-x: hidden; /* Prevent horizontal scroll on mobile */
+}
+
+/* Hide scrollbars on mobile while keeping functionality */
+@media (max-width: 767px) {
+  ::-webkit-scrollbar {
+    display: none;
+  }
+  
+  * {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
 }
 
 /* Touch target expansion for mobile grid cells */

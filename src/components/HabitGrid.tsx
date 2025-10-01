@@ -136,22 +136,22 @@ const HabitGrid: React.FC<HabitGridProps> = ({
           )}
 
           {/* Habit Grid */}
-          <div className="overflow-auto px-2" role="region" aria-labelledby="habit-grid-label">
+          <div className="overflow-hidden px-1" role="region" aria-labelledby="habit-grid-label">
             <h3 id="habit-grid-label" className="sr-only">Daily habit completion grid</h3>
             <div className="min-w-full">
               {/* Habit Headers (X-axis) */}
               <div 
-                className={`grid gap-0 mb-3 divide-x divide-slate-400 ${isMobile ? 'sticky top-[60px] z-10 bg-white border-b border-slate-200' : ''}`} 
-                style={{ gridTemplateColumns: isMobile ? `44px repeat(${Math.min(habits.length, 9)}, 33px)` : `150px repeat(${habits.length}, 1fr)` }} 
+                className={`grid gap-0 mb-3 ${isMobile ? 'sticky top-[60px] z-10 bg-white border-b border-slate-200' : 'divide-x divide-slate-400'}`} 
+                style={{ gridTemplateColumns: isMobile ? `40px repeat(${Math.min(habits.length, 9)}, 30px)` : `150px repeat(${habits.length}, 1fr)` }} 
                 role="row"
               >
-                <div className={`text-sm font-medium text-slate-500 ${isMobile ? 'py-2 px-1 text-xs bg-slate-100' : 'py-3 px-2'}`} role="columnheader">
+                <div className={`text-sm font-medium text-slate-500 ${isMobile ? 'py-2 px-0.5 text-xs bg-slate-100' : 'py-3 px-2'}`} role="columnheader">
                   {isMobile ? 'Day' : 'Day'}
                 </div>
                 {habits.map((habit, index) => (
                   <div 
                     key={index} 
-                    className={`text-center text-xs font-medium text-slate-600 ${isMobile ? 'py-2 px-0.5 relative' : 'py-3 px-0.5'}`} 
+                    className={`text-center text-xs font-medium text-slate-600 ${isMobile ? 'py-2 px-0 relative' : 'py-3 px-0.5'}`} 
                     role="columnheader"
                   >
                     <div className="flex flex-col items-center gap-1">
@@ -200,10 +200,10 @@ const HabitGrid: React.FC<HabitGridProps> = ({
                     <div 
                       key={day} 
                       className="grid gap-0 divide-x divide-slate-400" 
-                      style={{ gridTemplateColumns: isMobile ? `44px repeat(${Math.min(habits.length, 9)}, 33px)` : `150px repeat(${habits.length}, 1fr)` }} 
+                      style={{ gridTemplateColumns: isMobile ? `40px repeat(${Math.min(habits.length, 9)}, 30px)` : `150px repeat(${habits.length}, 1fr)` }} 
                       role="row"
                     >
-                      <div className={`text-xs font-medium py-2 px-2 text-center ${isMobile ? 'bg-slate-100' : 'rounded-md'} ${
+                      <div className={`text-xs font-medium py-2 px-1 text-center ${isMobile ? 'bg-slate-100' : 'rounded-md'} ${
                         isToday ? 'bg-indigo-100 text-indigo-700 font-bold' : 'text-slate-600'
                       } ${isMobile ? 'text-center' : 'text-left'}`} role="rowheader">
                         <div className={isPastDay ? 'line-through' : ''}>
@@ -217,7 +217,7 @@ const HabitGrid: React.FC<HabitGridProps> = ({
                             <button
                               onClick={() => updateHabit(day, habit.id, !isCompleted)}
                               className={`
-                                ${isMobile ? 'w-[30px] h-[40px] touch-target-expand' : 'w-full h-10'} rounded-lg border transition-all duration-200 flex items-center justify-center hover:scale-105
+                                ${isMobile ? 'w-[28px] h-[36px] touch-target-expand' : 'w-full h-10'} rounded-lg border transition-all duration-200 flex items-center justify-center hover:scale-105
                                 ${isCompleted 
                                   ? habit.type === 'critical' ? 'border-habit-critical-300 bg-habit-critical-50 text-habit-critical-700' :
                                     habit.type === 'goal' ? 'border-habit-goal-300 bg-habit-goal-50 text-habit-goal-600' :
@@ -231,7 +231,7 @@ const HabitGrid: React.FC<HabitGridProps> = ({
                               {isCompleted ? (
                                 <CheckSquare className={`${isMobile ? 'w-3 h-3' : 'w-4 h-4'}`} />
                               ) : (
-                                <Square className={`${isMobile ? 'w-3 h-3' : 'w-4 h-4'} opacity-50`} />
+                                <Square className={`${isMobile ? 'w-2.5 h-2.5' : 'w-4 h-4'} opacity-50`} />
                               )}
                             </button>
                           </div>
