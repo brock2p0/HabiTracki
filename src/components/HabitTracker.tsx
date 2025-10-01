@@ -145,7 +145,7 @@ const HabitTracker: React.FC = () => {
         {/* Header */}
         <header className={`bg-secondary-bg shadow-sm border-b border-slate-200 ${isMobile ? 'sticky top-0 z-20 h-15 px-4' : 'rounded-2xl p-6 mb-6'}`} role="banner">
           {isMobile ? (
-            <div className="flex items-center justify-between h-full">
+            <div className="flex items-center justify-between h-[60px]">
               <button
                 onClick={() => navigateMonth('prev')}
                 className="w-10 h-10 bg-slate-100 hover:bg-slate-200 rounded-full flex items-center justify-center transition-colors"
