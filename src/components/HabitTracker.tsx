@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Calendar, Target, Moon, CheckSquare, Settings, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Calendar, Target, Moon, CheckSquare, Settings, ChevronLeft, ChevronRight, Smile } from 'lucide-react';
 import { format, getDaysInMonth, startOfMonth, getDay } from 'date-fns';
 import CalendarGrid from './CalendarGrid';
 import HabitGrid from './HabitGrid';
 import MonthlyGoals from './MonthlyGoals';
 import SleepTracker from './SleepTracker';
+import MoodTracker from './MoodTracker';
 import HabitSettings from './HabitSettings';
 import { useHabitData } from '../hooks/useHabitData';
 import type { Habit } from '../types';
@@ -35,7 +36,8 @@ const HabitTracker: React.FC = () => {
     { id: 'habits', label: 'Daily Habits', icon: CheckSquare },
     { id: 'moments', label: 'Memorable Moments', icon: Calendar },
     { id: 'goals', label: 'Monthly Goals', icon: Target },
-    { id: 'sleep', label: 'Sleep Tracking', icon: Moon }
+    { id: 'sleep', label: 'Sleep Tracking', icon: Moon },
+    { id: 'mood', label: 'Mood Tracking', icon: Smile }
   ];
 
   const navigateMonth = (direction: 'prev' | 'next') => {
@@ -65,6 +67,14 @@ const HabitTracker: React.FC = () => {
     if (!newData[monthKey]) newData[monthKey] = {};
     if (!newData[monthKey][day]) newData[monthKey][day] = {};
     newData[monthKey][day].sleep = value;
+    updateData(newData);
+  };
+
+  const updateMood = (day: number, value: number) => {
+    const newData = { ...data };
+    if (!newData[monthKey]) newData[monthKey] = {};
+    if (!newData[monthKey][day]) newData[monthKey][day] = {};
+    newData[monthKey][day].mood = value;
     updateData(newData);
   };
 
@@ -132,6 +142,15 @@ const HabitTracker: React.FC = () => {
             daysInMonth={daysInMonth}
             getDayData={getDayData}
             updateSleep={updateSleep}
+          />
+        );
+      case 'mood':
+        return (
+          <MoodTracker
+            currentDate={currentDate}
+            daysInMonth={daysInMonth}
+            getDayData={getDayData}
+            updateMood={updateMood}
           />
         );
       default:

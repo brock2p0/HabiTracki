@@ -11,6 +11,7 @@ export interface DayData {
   moment?: string;
   habits?: { [habitId: string]: boolean | number };
   sleep?: number;
+  mood?: number;
 }
 
 export interface MonthData {
