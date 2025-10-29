@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Calendar, Target, Moon, CheckSquare, Settings, ChevronLeft, ChevronRight, Smile } from 'lucide-react';
-import { format, getDaysInMonth, startOfMonth, getDay } from 'date-fns';
+import { format, getDaysInMonth, startOfMonth, getDay, startOfWeek, addDays } from 'date-fns';
 import CalendarGrid from './CalendarGrid';
 import HabitGrid from './HabitGrid';
 import MonthlyGoals from './MonthlyGoals';
@@ -10,8 +10,15 @@ import HabitSettings from './HabitSettings';
 import { useHabitData } from '../hooks/useHabitData';
 import type { Habit } from '../types';
 
+type ViewMode = 'month' | 'week';
+
 const HabitTracker: React.FC = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
+  const [viewMode, setViewMode] = useState<ViewMode>('month');
+  const [currentWeekStart, setCurrentWeekStart] = useState<Date>(() => {
+    const today = new Date();
+    return startOfWeek(today, { weekStartsOn: 0 });
+  });
   const [activeTab, setActiveTab] = useState('habits');
   const [showSettings, setShowSettings] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
@@ -32,6 +39,18 @@ const HabitTracker: React.FC = () => {
   const monthKey = `${currentYear}-${currentMonth}`;
   const daysInMonth = getDaysInMonth(currentDate);
 
+  const displayDates = useMemo(() => {
+    if (viewMode === 'month') {
+      return Array.from({ length: daysInMonth }, (_, i) => {
+        return new Date(currentYear, currentMonth, i + 1);
+      });
+    } else {
+      return Array.from({ length: 7 }, (_, i) => {
+        return addDays(currentWeekStart, i);
+      });
+    }
+  }, [viewMode, currentDate, currentWeekStart, daysInMonth, currentYear, currentMonth]);
+
   const tabs = [
     { id: 'habits', label: 'Daily Habits', icon: CheckSquare },
     { id: 'moments', label: 'Memorable Moments', icon: Calendar },
@@ -41,8 +60,16 @@ const HabitTracker: React.FC = () => {
   ];
 
   const navigateMonth = (direction: 'prev' | 'next') => {
-    const newDate = new Date(currentYear, currentMonth + (direction === 'next' ? 1 : -1));
-    setCurrentDate(newDate);
+    const increment = direction === 'next' ? 1 : -1;
+
+    if (viewMode === 'month') {
+      const newDate = new Date(currentYear, currentMonth + increment);
+      setCurrentDate(newDate);
+    } else {
+      const newWeekStart = new Date(currentWeekStart);
+      newWeekStart.setDate(currentWeekStart.getDate() + (increment * 7));
+      setCurrentWeekStart(newWeekStart);
+    }
   };
 
   const updateMoment = (day: number, value: string) => {
@@ -53,12 +80,20 @@ const HabitTracker: React.FC = () => {
     updateData(newData);
   };
 
-  const updateHabit = (day: number, habitId: string, value: boolean | number) => {
+  const updateHabit = (day: number, habitId: string, value: boolean | number, date?: Date) => {
     const newData = { ...data };
-    if (!newData[monthKey]) newData[monthKey] = {};
-    if (!newData[monthKey][day]) newData[monthKey][day] = {};
-    if (!newData[monthKey][day].habits) newData[monthKey][day].habits = {};
-    newData[monthKey][day].habits[habitId] = value;
+    let targetMonthKey = monthKey;
+
+    if (date) {
+      const year = date.getFullYear();
+      const month = date.getMonth();
+      targetMonthKey = `${year}-${month}`;
+    }
+
+    if (!newData[targetMonthKey]) newData[targetMonthKey] = {};
+    if (!newData[targetMonthKey][day]) newData[targetMonthKey][day] = {};
+    if (!newData[targetMonthKey][day].habits) newData[targetMonthKey][day].habits = {};
+    newData[targetMonthKey][day].habits[habitId] = value;
     updateData(newData);
   };
 
@@ -110,9 +145,8 @@ const HabitTracker: React.FC = () => {
         return (
           <HabitGrid
             habits={habits}
-           currentDate={currentDate}
-            daysInMonth={daysInMonth}
-            getDayData={getDayData}
+            displayDates={displayDates}
+            data={data}
             updateHabit={updateHabit}
             isMobile={isMobile}
           />
@@ -168,21 +202,50 @@ const HabitTracker: React.FC = () => {
               <button
                 onClick={() => navigateMonth('prev')}
                 className="w-10 h-10 bg-slate-100 hover:bg-slate-200 rounded-full flex items-center justify-center transition-colors"
-                aria-label="Go to previous month"
+                aria-label={`Go to previous ${viewMode}`}
               >
                 <ChevronLeft className="w-5 h-5 text-slate-700" />
               </button>
-              
-              <div className="text-center">
+
+              <div className="text-center flex-1">
                 <h1 className="text-xl font-bold text-slate-800">
-                  {format(currentDate, 'MMMM yyyy')}
+                  {viewMode === 'month'
+                    ? format(currentDate, 'MMMM yyyy')
+                    : `${format(currentWeekStart, 'MMM d')} - ${format(addDays(currentWeekStart, 6), 'MMM d, yyyy')}`
+                  }
                 </h1>
+                <div className="flex gap-1 bg-slate-100 rounded-lg p-1 mt-1 inline-flex">
+                  <button
+                    onClick={() => {
+                      setViewMode('month');
+                      const midWeek = addDays(currentWeekStart, 3);
+                      setCurrentDate(midWeek);
+                    }}
+                    className={`px-3 py-1 rounded text-xs font-medium transition-colors ${
+                      viewMode === 'month' ? 'bg-white shadow-sm text-slate-800' : 'text-slate-600'
+                    }`}
+                  >
+                    Month
+                  </button>
+                  <button
+                    onClick={() => {
+                      const weekStart = startOfWeek(currentDate, { weekStartsOn: 0 });
+                      setCurrentWeekStart(weekStart);
+                      setViewMode('week');
+                    }}
+                    className={`px-3 py-1 rounded text-xs font-medium transition-colors ${
+                      viewMode === 'week' ? 'bg-white shadow-sm text-slate-800' : 'text-slate-600'
+                    }`}
+                  >
+                    Week
+                  </button>
+                </div>
               </div>
-              
+
               <button
                 onClick={() => navigateMonth('next')}
                 className="w-10 h-10 bg-slate-100 hover:bg-slate-200 rounded-full flex items-center justify-center transition-colors"
-                aria-label="Go to next month"
+                aria-label={`Go to next ${viewMode}`}
               >
                 <ChevronRight className="w-5 h-5 text-slate-700" />
               </button>
@@ -193,26 +256,55 @@ const HabitTracker: React.FC = () => {
                 <Calendar className="w-8 h-8 text-indigo-600" />
                 <div>
                   <h1 className="text-3xl font-bold text-slate-800">
-                    {format(currentDate, 'MMMM yyyy')}
+                    {viewMode === 'month'
+                      ? format(currentDate, 'MMMM yyyy')
+                      : `${format(currentWeekStart, 'MMM d')} - ${format(addDays(currentWeekStart, 6), 'MMM d, yyyy')}`
+                    }
                   </h1>
                   <p className="text-slate-500">Track your daily habits and moments</p>
                 </div>
               </div>
-              
+
               <nav className="flex items-center gap-3" role="navigation" aria-label="Month navigation and settings">
+                <div className="flex gap-1 bg-slate-100 rounded-lg p-1">
+                  <button
+                    onClick={() => {
+                      setViewMode('month');
+                      const midWeek = addDays(currentWeekStart, 3);
+                      setCurrentDate(midWeek);
+                    }}
+                    className={`px-3 py-1 rounded text-sm font-medium transition-colors ${
+                      viewMode === 'month' ? 'bg-white shadow-sm text-slate-800' : 'text-slate-600'
+                    }`}
+                  >
+                    Month
+                  </button>
+                  <button
+                    onClick={() => {
+                      const weekStart = startOfWeek(currentDate, { weekStartsOn: 0 });
+                      setCurrentWeekStart(weekStart);
+                      setViewMode('week');
+                    }}
+                    className={`px-3 py-1 rounded text-sm font-medium transition-colors ${
+                      viewMode === 'week' ? 'bg-white shadow-sm text-slate-800' : 'text-slate-600'
+                    }`}
+                  >
+                    Week
+                  </button>
+                </div>
                 <button
                   onClick={() => navigateMonth('prev')}
                   className="px-4 py-2 bg-indigo-600 text-white rounded-lg shadow-md hover:bg-indigo-700 transition-colors"
-                  aria-label="Go to previous month"
+                  aria-label={`Go to previous ${viewMode}`}
                 >
-                  ← Last Month
+                  ← {viewMode === 'month' ? 'Last Month' : 'Last Week'}
                 </button>
                 <button
                   onClick={() => navigateMonth('next')}
                   className="px-4 py-2 bg-indigo-600 text-white rounded-lg shadow-md hover:bg-indigo-700 transition-colors"
-                  aria-label="Go to next month"
+                  aria-label={`Go to next ${viewMode}`}
                 >
-                  Next Month →
+                  {viewMode === 'month' ? 'Next Month' : 'Next Week'} →
                 </button>
                 <button
                   onClick={() => setShowSettings(!showSettings)}

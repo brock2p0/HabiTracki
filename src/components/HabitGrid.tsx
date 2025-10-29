@@ -1,26 +1,31 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { CheckSquare, Square, Flame, Info } from 'lucide-react';
 import { format, isBefore, startOfDay, subDays } from 'date-fns';
-import type { Habit } from '../types';
+import type { Habit, HabitData } from '../types';
 import HabitHeaderRow from './HabitHeaderRow';
 
 interface HabitGridProps {
   habits: Habit[];
-  currentDate: Date;
-  daysInMonth: number;
-  getDayData: (day: number) => any;
-  updateHabit: (day: number, habitId: string, value: boolean | number) => void;
+  displayDates: Date[];
+  data: HabitData;
+  updateHabit: (day: number, habitId: string, value: boolean | number, date?: Date) => void;
   isMobile?: boolean;
 }
 
 const HabitGrid: React.FC<HabitGridProps> = ({
   habits,
-  currentDate,
-  daysInMonth,
-  getDayData,
+  displayDates,
+  data,
   updateHabit,
   isMobile = false
 }) => {
+  const getDayData = (date: Date) => {
+    const year = date.getFullYear();
+    const month = date.getMonth();
+    const day = date.getDate();
+    const monthKey = `${year}-${month}`;
+    return data[monthKey]?.[day] || {};
+  };
   const [tooltipVisible, setTooltipVisible] = useState<number | null>(null);
   const [tooltipTimeout, setTooltipTimeout] = useState<NodeJS.Timeout | null>(null);
   const [isFloating, setIsFloating] = useState(false);
@@ -111,23 +116,24 @@ const HabitGrid: React.FC<HabitGridProps> = ({
   }, [isMobile, habits]);
 
   const getFlameMomentum = (habit: Habit) => {
-    if (isMobile) return 0; // Skip flame calculation on mobile
-    
+    if (isMobile) return 0;
+
     const flameCount = habit.flameCount || 3;
-    const lookbackDays = Math.min(14, daysInMonth);
+    const lookbackDays = Math.min(14, displayDates.length);
     const recentDays = [];
-    
+
     for (let i = 0; i < lookbackDays; i++) {
-      const day = daysInMonth - i;
-      if (day >= 1) {
-        const dayData = getDayData(day);
+      const dateIndex = displayDates.length - 1 - i;
+      if (dateIndex >= 0) {
+        const date = displayDates[dateIndex];
+        const dayData = getDayData(date);
         const isCompleted = dayData.habits?.[habit.id] || false;
-        recentDays.unshift({ day, completed: isCompleted });
+        recentDays.unshift({ date, completed: isCompleted });
       }
     }
-    
+
     if (recentDays.length === 0) return 0;
-    
+
     const completedDays = recentDays.filter(d => d.completed).length;
     const baseRate = completedDays / recentDays.length;
     const momentum = baseRate;
@@ -191,19 +197,19 @@ const HabitGrid: React.FC<HabitGridProps> = ({
 
               {/* Day Rows (Y-axis) */}
               <div className="space-y-2">
-                {Array.from({ length: daysInMonth }, (_, i) => i + 1).map(day => {
+                {displayDates.map((dayDate, index) => {
                   const todayCheck = new Date();
-                  const dayDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
-                  const isToday = todayCheck.getDate() === day && 
-                                 todayCheck.getMonth() === currentDate.getMonth() && 
-                                 todayCheck.getFullYear() === currentDate.getFullYear();
+                  const isToday = todayCheck.getDate() === dayDate.getDate() &&
+                                 todayCheck.getMonth() === dayDate.getMonth() &&
+                                 todayCheck.getFullYear() === dayDate.getFullYear();
                   const isPastDay = isBefore(dayDate, today);
-                  
+                  const day = dayDate.getDate();
+
                   return (
-                    <div 
-                      key={day} 
-                      className="grid gap-0 divide-x divide-slate-400" 
-                      style={{ gridTemplateColumns: isMobile ? `40px repeat(${Math.min(habits.length, 9)}, 30px)` : `150px repeat(${habits.length}, 1fr)` }} 
+                    <div
+                      key={`${dayDate.getFullYear()}-${dayDate.getMonth()}-${day}`}
+                      className="grid gap-0 divide-x divide-slate-400"
+                      style={{ gridTemplateColumns: isMobile ? `40px repeat(${Math.min(habits.length, 9)}, 30px)` : `150px repeat(${habits.length}, 1fr)` }}
                       role="row"
                     >
                       <div className={`text-xs font-medium py-2 px-1 text-center ${isMobile ? 'bg-slate-100' : 'rounded-md'} ${
@@ -214,21 +220,22 @@ const HabitGrid: React.FC<HabitGridProps> = ({
                         </div>
                       </div>
                       {habits.map((habit, habitIndex) => {
-                        const isCompleted = getDayData(day).habits?.[habit.id];
+                        const dayData = getDayData(dayDate);
+                        const isCompleted = dayData.habits?.[habit.id];
                         return (
                           <div key={habit.id} role="gridcell">
                             <button
-                              onClick={() => updateHabit(day, habit.id, !isCompleted)}
+                              onClick={() => updateHabit(day, habit.id, !isCompleted, dayDate)}
                               className={`
                                 ${isMobile ? 'w-[28px] h-[36px] touch-target-expand' : 'w-full h-10'} rounded-lg border transition-all duration-200 flex items-center justify-center hover:scale-105
-                                ${isCompleted 
+                                ${isCompleted
                                   ? habit.type === 'critical' ? 'border-habit-critical-300 bg-habit-critical-50 text-habit-critical-700' :
                                     habit.type === 'goal' ? 'border-habit-goal-300 bg-habit-goal-50 text-habit-goal-600' :
                                     'border-habit-avoid-300 bg-habit-avoid-50 text-habit-avoid-600'
                                   : 'border-slate-200 hover:border-slate-300 text-slate-400 hover:text-slate-600'
                                 }
                               `}
-                              aria-label={`${habit.name} for day ${day}: ${isCompleted ? 'completed' : 'not completed'}`}
+                              aria-label={`${habit.name} for ${format(dayDate, 'MMM d')}: ${isCompleted ? 'completed' : 'not completed'}`}
                               aria-pressed={isCompleted}
                             >
                               {isCompleted ? (
