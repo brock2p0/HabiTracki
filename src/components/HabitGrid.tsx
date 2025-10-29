@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { CheckSquare, Square, Flame, Info } from 'lucide-react';
 import { format, isBefore, startOfDay, subDays } from 'date-fns';
 import type { Habit } from '../types';
+import HabitHeaderRow from './HabitHeaderRow';
 
 interface HabitGridProps {
   habits: Habit[];
@@ -20,8 +21,11 @@ const HabitGrid: React.FC<HabitGridProps> = ({
   updateHabit,
   isMobile = false
 }) => {
-  const [tooltipVisible, setTooltipVisible] = React.useState<number | null>(null);
-  const [tooltipTimeout, setTooltipTimeout] = React.useState<NodeJS.Timeout | null>(null);
+  const [tooltipVisible, setTooltipVisible] = useState<number | null>(null);
+  const [tooltipTimeout, setTooltipTimeout] = useState<NodeJS.Timeout | null>(null);
+  const [isFloating, setIsFloating] = useState(false);
+  const headerRef = useRef<HTMLDivElement>(null);
+  const [headerDimensions, setHeaderDimensions] = useState({ width: 0, left: 0 });
 
   const today = startOfDay(new Date());
 
@@ -53,13 +57,58 @@ const HabitGrid: React.FC<HabitGridProps> = ({
     setTooltipVisible(null);
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     return () => {
       if (tooltipTimeout) {
         clearTimeout(tooltipTimeout);
       }
     };
   }, [tooltipTimeout]);
+
+  useEffect(() => {
+    if (!isMobile || !headerRef.current) return;
+
+    const header = headerRef.current;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsFloating(!entry.isIntersecting);
+      },
+      {
+        threshold: 0,
+        rootMargin: '-1px 0px 0px 0px'
+      }
+    );
+
+    observer.observe(header);
+
+    return () => observer.disconnect();
+  }, [isMobile]);
+
+  useEffect(() => {
+    if (!isMobile || !headerRef.current) return;
+
+    const updateDimensions = () => {
+      if (headerRef.current) {
+        setHeaderDimensions({
+          width: headerRef.current.offsetWidth,
+          left: headerRef.current.offsetLeft
+        });
+      }
+    };
+
+    updateDimensions();
+
+    const resizeObserver = new ResizeObserver(updateDimensions);
+    resizeObserver.observe(headerRef.current);
+
+    window.addEventListener('resize', updateDimensions);
+
+    return () => {
+      resizeObserver.disconnect();
+      window.removeEventListener('resize', updateDimensions);
+    };
+  }, [isMobile, habits]);
 
   const getFlameMomentum = (habit: Habit) => {
     if (isMobile) return 0; // Skip flame calculation on mobile
@@ -101,55 +150,43 @@ const HabitGrid: React.FC<HabitGridProps> = ({
         </div>
       ) : (
         <div className="space-y-4">
+          {/* Floating Header Clone (Mobile Only) */}
+          {isMobile && isFloating && (
+            <div
+              className="fixed top-[60px] left-0 right-0 z-30 bg-white/85 backdrop-blur-sm border-b border-slate-200"
+              style={{
+                width: headerDimensions.width || '100%',
+                paddingLeft: `${headerDimensions.left}px`,
+                paddingRight: '8px',
+                transform: 'translateZ(0)',
+                willChange: 'transform'
+              }}
+            >
+              <HabitHeaderRow
+                habits={habits}
+                isMobile={isMobile}
+                tooltipVisible={tooltipVisible}
+                showTooltip={showTooltip}
+                hideTooltip={hideTooltip}
+                className=""
+              />
+            </div>
+          )}
+
           {/* Habit Grid */}
           <div className="overflow-hidden px-1" role="region" aria-labelledby="habit-grid-label">
             <h3 id="habit-grid-label" className="sr-only">Daily habit completion grid</h3>
             <div className="min-w-full">
-              {/* Habit Headers (X-axis) */}
-              <div 
-                className={`grid gap-0 mb-3 ${isMobile ? 'sticky top-[60px] z-10 bg-white border-b border-slate-200' : 'divide-x divide-slate-400'}`} 
-                style={{ gridTemplateColumns: isMobile ? `40px repeat(${Math.min(habits.length, 9)}, 30px)` : `150px repeat(${habits.length}, 1fr)` }} 
-                role="row"
-              >
-                <div className={`text-sm font-medium text-slate-500 ${isMobile ? 'py-2 px-0.5 text-xs bg-slate-100' : 'py-3 px-2'}`} role="columnheader">
-                  {isMobile ? 'Day' : 'Day'}
-                </div>
-                {habits.map((habit, index) => (
-                  <div 
-                    key={index} 
-                    className={`text-center text-xs font-medium text-slate-600 ${isMobile ? 'py-2 px-0 relative' : 'py-3 px-0.5'}`} 
-                    role="columnheader"
-                  >
-                    <div className="flex flex-col items-center gap-1">
-                      <div className={`${isMobile ? 'w-1.5 h-1.5' : 'w-2 h-2'} rounded-full ${
-                        habit.type === 'critical' ? 'bg-habit-critical-500' :
-                        habit.type === 'goal' ? 'bg-habit-goal-500' :
-                        habit.type === 'avoid' ? 'bg-habit-avoid-500' : 'bg-slate-500'
-                      }`}></div>
-                      {isMobile ? (
-                        <button
-                          onClick={() => showTooltip(index)}
-                          onMouseEnter={() => !isMobile && showTooltip(index)}
-                          onMouseLeave={() => !isMobile && hideTooltip()}
-                          className="leading-tight hover:text-slate-800 transition-colors"
-                          aria-label={`${habit.name} - tap for full name`}
-                        >
-                          {habit.abbreviation || habit.name.substring(0, 2)}
-                        </button>
-                      ) : (
-                        <span className="leading-tight">{habit.name}</span>
-                      )}
-                    </div>
-                    
-                    {/* Tooltip */}
-                    {tooltipVisible === index && (
-                      <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-1 z-20 bg-slate-800 text-white text-xs px-2 py-1 rounded shadow-lg whitespace-nowrap">
-                        {habit.name}
-                        <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-b-slate-800"></div>
-                      </div>
-                    )}
-                  </div>
-                ))}
+              {/* Original Habit Headers (X-axis) */}
+              <div ref={headerRef}>
+                <HabitHeaderRow
+                  habits={habits}
+                  isMobile={isMobile}
+                  tooltipVisible={tooltipVisible}
+                  showTooltip={showTooltip}
+                  hideTooltip={hideTooltip}
+                  className={isMobile ? 'border-b border-slate-200' : 'divide-x divide-slate-400'}
+                />
               </div>
 
               {/* Day Rows (Y-axis) */}
