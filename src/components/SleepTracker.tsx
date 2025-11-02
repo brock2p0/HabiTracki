@@ -1,5 +1,6 @@
 import React from 'react';
 import { Moon, TrendingUp } from 'lucide-react';
+import { useTheme } from '../contexts/ThemeContext';
 
 interface SleepTrackerProps {
   currentDate: Date;
@@ -14,6 +15,7 @@ const SleepTracker: React.FC<SleepTrackerProps> = ({
   getDayData,
   updateSleep
 }) => {
+  const { isDarkMode } = useTheme();
   const getSleepData = () => {
     const sleepData = [];
     for (let day = 1; day <= daysInMonth; day++) {
@@ -53,24 +55,24 @@ const SleepTracker: React.FC<SleepTrackerProps> = ({
   const averageSleep = getAverageSleep();
 
   return (
-    <section className="bg-secondary-bg rounded-2xl shadow-sm border border-slate-200 p-6" aria-labelledby="sleep-heading">
+    <section className="bg-secondary-bg dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 p-6" aria-labelledby="sleep-heading">
       <div className="flex items-center gap-2 mb-6">
-        <Moon className="w-5 h-5 text-indigo-600" />
-        <h2 id="sleep-heading" className="text-xl font-semibold text-slate-800">Sleep Tracking</h2>
+        <Moon className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+        <h2 id="sleep-heading" className="text-xl font-semibold text-slate-800 dark:text-slate-200">Sleep Tracking</h2>
       </div>
 
       {/* Sleep Stats */}
       <div className="grid grid-cols-2 gap-4 mb-6" role="region" aria-labelledby="sleep-stats">
         <h3 id="sleep-stats" className="sr-only">Sleep statistics</h3>
-        <div className="bg-white rounded-lg p-3">
-          <div className="text-xs text-slate-500 mb-1" id="avg-sleep-label">Average Sleep</div>
-          <div className="text-lg font-semibold text-slate-800">
+        <div className="bg-white dark:bg-slate-800 rounded-lg p-3">
+          <div className="text-xs text-slate-500 dark:text-slate-400 mb-1" id="avg-sleep-label">Average Sleep</div>
+          <div className="text-lg font-semibold text-slate-800 dark:text-slate-200">
             {averageSleep > 0 ? `${averageSleep}h` : '--'}
           </div>
         </div>
-        <div className="bg-white rounded-lg p-3">
-          <div className="text-xs text-slate-500 mb-1" id="days-tracked-label">Days Tracked</div>
-          <div className="text-lg font-semibold text-slate-800">
+        <div className="bg-white dark:bg-slate-800 rounded-lg p-3">
+          <div className="text-xs text-slate-500 dark:text-slate-400 mb-1" id="days-tracked-label">Days Tracked</div>
+          <div className="text-lg font-semibold text-slate-800 dark:text-slate-200">
             {getSleepData().length}/{daysInMonth}
           </div>
         </div>
@@ -91,7 +93,7 @@ const SleepTracker: React.FC<SleepTrackerProps> = ({
                   y1={140 - ((hour - 4) / 6) * 120} 
                   x2="280" 
                   y2={140 - ((hour - 4) / 6) * 120} 
-                  stroke="#e2e8f0" 
+                  stroke={isDarkMode ? '#334155' : '#e2e8f0'} 
                   strokeWidth="1"
                 />
                 <text 
@@ -99,7 +101,7 @@ const SleepTracker: React.FC<SleepTrackerProps> = ({
                   y={145 - ((hour - 4) / 6) * 120} 
                   fontSize="10" 
                   textAnchor="end"
-                  fill="#64748b"
+                  fill={isDarkMode ? '#94a3b8' : '#64748b'}
                 >
                   {hour}h
                 </text>
@@ -113,7 +115,7 @@ const SleepTracker: React.FC<SleepTrackerProps> = ({
                 y1={140 - ((averageSleep - 4) / 6) * 120}
                 x2="280"
                 y2={140 - ((averageSleep - 4) / 6) * 120}
-                stroke="#f59e0b"
+                stroke={isDarkMode ? '#fbbf24' : '#f59e0b'}
                 strokeWidth="1"
                 strokeDasharray="4,4"
               />
@@ -124,7 +126,7 @@ const SleepTracker: React.FC<SleepTrackerProps> = ({
               <path
                 d={createSleepPath()}
                 fill="none"
-                stroke="#3b82f6"
+                stroke={isDarkMode ? '#60a5fa' : '#3b82f6'}
                 strokeWidth="2"
               />
             )}
@@ -136,7 +138,7 @@ const SleepTracker: React.FC<SleepTrackerProps> = ({
                 cx={20 + (point.day / daysInMonth) * 260}
                 cy={140 - ((point.hours - 4) / 6) * 120}
                 r="4"
-                fill="#3b82f6"
+                fill={isDarkMode ? '#60a5fa' : '#3b82f6'}
                 className="hover:r-6 transition-all cursor-pointer"
               />
             ))}
@@ -146,11 +148,11 @@ const SleepTracker: React.FC<SleepTrackerProps> = ({
 
       {/* Sleep Input Grid */}
       <div className="space-y-2" role="region" aria-labelledby="sleep-input-heading">
-        <h3 id="sleep-input-heading" className="text-sm font-medium text-slate-600">Daily Sleep Hours</h3>
+        <h3 id="sleep-input-heading" className="text-sm font-medium text-slate-600 dark:text-slate-400">Daily Sleep Hours</h3>
         <div className="grid gap-1" style={{ gridTemplateColumns: `repeat(${Math.min(daysInMonth, 10)}, 1fr)` }} role="grid" aria-label="Daily sleep hours input">
           {Array.from({ length: Math.min(daysInMonth, 10) }, (_, i) => i + 1).map(day => (
             <div key={day} className="text-center" role="gridcell">
-              <div className="text-xs text-slate-500 mb-1">{day}</div>
+              <div className="text-xs text-slate-500 dark:text-slate-400 mb-1">{day}</div>
               <input
                 type="number"
                 step="0.5"
@@ -158,7 +160,7 @@ const SleepTracker: React.FC<SleepTrackerProps> = ({
                 max="12"
                 value={getDayData(day).sleep || ''}
                 onChange={(e) => updateSleep(day, parseFloat(e.target.value) || 0)}
-                className="w-full text-xs text-center border border-slate-300 rounded p-1 focus:ring-1 focus:ring-indigo-500 focus:border-transparent"
+                className="w-full text-xs text-center border border-slate-300 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-200 rounded p-1 focus:ring-1 focus:ring-indigo-500 focus:border-transparent"
                 placeholder="0"
                 aria-label={`Sleep hours for day ${day}`}
               />
@@ -171,7 +173,7 @@ const SleepTracker: React.FC<SleepTrackerProps> = ({
             <div className="grid gap-1 mt-2" style={{ gridTemplateColumns: `repeat(${Math.min(daysInMonth - 10, 10)}, 1fr)` }} role="grid" aria-label="Daily sleep hours input continued">
               {Array.from({ length: Math.min(daysInMonth - 10, 10) }, (_, i) => i + 11).map(day => (
                 <div key={day} className="text-center" role="gridcell">
-                  <div className="text-xs text-slate-500 mb-1">{day}</div>
+                  <div className="text-xs text-slate-500 dark:text-slate-400 mb-1">{day}</div>
                   <input
                     type="number"
                     step="0.5"
@@ -179,7 +181,7 @@ const SleepTracker: React.FC<SleepTrackerProps> = ({
                     max="12"
                     value={getDayData(day).sleep || ''}
                     onChange={(e) => updateSleep(day, parseFloat(e.target.value) || 0)}
-                    className="w-full text-xs text-center border border-slate-300 rounded p-1 focus:ring-1 focus:ring-indigo-500 focus:border-transparent"
+                    className="w-full text-xs text-center border border-slate-300 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-200 rounded p-1 focus:ring-1 focus:ring-indigo-500 focus:border-transparent"
                     placeholder="0"
                     aria-label={`Sleep hours for day ${day}`}
                   />
@@ -191,7 +193,7 @@ const SleepTracker: React.FC<SleepTrackerProps> = ({
               <div className="grid gap-1 mt-2" style={{ gridTemplateColumns: `repeat(${daysInMonth - 20}, 1fr)` }} role="grid" aria-label="Daily sleep hours input final section">
                 {Array.from({ length: daysInMonth - 20 }, (_, i) => i + 21).map(day => (
                   <div key={day} className="text-center" role="gridcell">
-                    <div className="text-xs text-slate-500 mb-1">{day}</div>
+                    <div className="text-xs text-slate-500 dark:text-slate-400 mb-1">{day}</div>
                     <input
                       type="number"
                       step="0.5"
@@ -199,7 +201,7 @@ const SleepTracker: React.FC<SleepTrackerProps> = ({
                       max="12"
                       value={getDayData(day).sleep || ''}
                       onChange={(e) => updateSleep(day, parseFloat(e.target.value) || 0)}
-                      className="w-full text-xs text-center border border-slate-300 rounded p-1 focus:ring-1 focus:ring-indigo-500 focus:border-transparent"
+                      className="w-full text-xs text-center border border-slate-300 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-200 rounded p-1 focus:ring-1 focus:ring-indigo-500 focus:border-transparent"
                       placeholder="0"
                       aria-label={`Sleep hours for day ${day}`}
                     />

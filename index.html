@@ -5,6 +5,18 @@
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Start development server</title>
+    <script>
+      (function() {
+        try {
+          const theme = localStorage.getItem('habit-tracker-theme');
+          if (theme === 'dark') {
+            document.documentElement.classList.add('dark');
+          }
+        } catch (e) {
+          // localStorage blocked or quota exceeded - fail silently to light mode
+        }
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

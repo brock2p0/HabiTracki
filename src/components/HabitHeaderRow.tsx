@@ -24,13 +24,13 @@ const HabitHeaderRow: React.FC<HabitHeaderRowProps> = ({
       style={{ gridTemplateColumns: isMobile ? `40px repeat(${Math.min(habits.length, 9)}, 30px)` : `150px repeat(${habits.length}, 1fr)` }}
       role="row"
     >
-      <div className={`text-sm font-medium text-slate-500 ${isMobile ? 'py-2 px-0.5 text-xs bg-slate-100' : 'py-3 px-2'}`} role="columnheader">
+      <div className={`text-sm font-medium text-slate-500 dark:text-slate-400 ${isMobile ? 'py-2 px-0.5 text-xs bg-slate-100 dark:bg-slate-800' : 'py-3 px-2'}`} role="columnheader">
         {isMobile ? 'Day' : 'Day'}
       </div>
       {habits.slice(0, isMobile ? 9 : habits.length).map((habit, index) => (
         <div
           key={habit.id}
-          className={`text-center text-xs font-medium text-slate-600 ${isMobile ? 'py-2 px-0 relative' : 'py-3 px-0.5'}`}
+          className={`text-center text-xs font-medium text-slate-600 dark:text-slate-400 ${isMobile ? 'py-2 px-0 relative' : 'py-3 px-0.5'}`}
           role="columnheader"
         >
           <div className="flex flex-col items-center gap-1">
@@ -44,7 +44,7 @@ const HabitHeaderRow: React.FC<HabitHeaderRowProps> = ({
                 onClick={() => showTooltip(index)}
                 onMouseEnter={() => !isMobile && showTooltip(index)}
                 onMouseLeave={() => !isMobile && hideTooltip()}
-                className="leading-tight hover:text-slate-800 transition-colors"
+                className="leading-tight hover:text-slate-800 dark:hover:text-slate-200 transition-colors"
                 aria-label={`${habit.name} - tap for full name`}
               >
                 {habit.abbreviation || habit.name.substring(0, 2)}
@@ -55,9 +55,9 @@ const HabitHeaderRow: React.FC<HabitHeaderRowProps> = ({
           </div>
 
           {tooltipVisible === index && (
-            <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-1 z-20 bg-slate-800 text-white text-xs px-2 py-1 rounded shadow-lg whitespace-nowrap">
+            <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-1 z-20 bg-slate-800 dark:bg-slate-700 text-white text-xs px-2 py-1 rounded shadow-lg whitespace-nowrap">
               {habit.name}
-              <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-b-slate-800"></div>
+              <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-b-slate-800 dark:border-b-slate-700"></div>
             </div>
           )}
         </div>

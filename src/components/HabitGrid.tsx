@@ -36,10 +36,10 @@ const HabitGrid: React.FC<HabitGridProps> = ({
 
   const getHabitColor = (type: string) => {
     switch (type) {
-      case 'critical': return 'text-habit-critical-700 border-habit-critical-300';
-      case 'goal': return 'text-habit-goal-600 border-habit-goal-300';
-      case 'avoid': return 'text-habit-avoid-600 border-habit-avoid-300';
-      default: return 'text-slate-600 border-slate-200';
+      case 'critical': return 'text-habit-critical-700 dark:text-habit-critical-400 border-habit-critical-300 dark:border-habit-critical-600';
+      case 'goal': return 'text-habit-goal-600 dark:text-habit-goal-400 border-habit-goal-300 dark:border-habit-goal-600';
+      case 'avoid': return 'text-habit-avoid-600 dark:text-habit-avoid-400 border-habit-avoid-300 dark:border-habit-avoid-600';
+      default: return 'text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-700';
     }
   };
 
@@ -141,16 +141,16 @@ const HabitGrid: React.FC<HabitGridProps> = ({
   };
 
   return (
-    <section className={`bg-secondary-bg ${isMobile ? '' : 'rounded-2xl'} shadow-sm border border-slate-200 ${isMobile ? 'p-2' : 'p-6'}`} aria-labelledby="habits-heading">
+    <section className={`bg-secondary-bg dark:bg-slate-900 ${isMobile ? '' : 'rounded-2xl'} shadow-sm border border-slate-200 dark:border-slate-800 ${isMobile ? 'p-2' : 'p-6'}`} aria-labelledby="habits-heading">
       {!isMobile && (
         <div className="flex items-center gap-2 mb-6">
           <Flame className="w-5 h-5 text-orange-500" />
-          <h2 id="habits-heading" className="text-xl font-semibold text-slate-800">Daily Habits</h2>
+          <h2 id="habits-heading" className="text-xl font-semibold text-slate-800 dark:text-slate-200">Daily Habits</h2>
         </div>
       )}
 
       {habits.length === 0 ? (
-        <div className="text-center py-12 text-slate-500">
+        <div className="text-center py-12 text-slate-500 dark:text-slate-400">
           <Flame className="w-12 h-12 mx-auto mb-4 opacity-50" />
           <p>No habits yet. Add some habits to start tracking!</p>
         </div>
@@ -159,7 +159,7 @@ const HabitGrid: React.FC<HabitGridProps> = ({
           {/* Floating Header Clone (Mobile Only) */}
           {isMobile && isFloating && (
             <div
-              className="fixed top-[60px] left-0 right-0 z-30 bg-white/85 backdrop-blur-sm border-b border-slate-200"
+              className="fixed top-[60px] left-0 right-0 z-30 bg-white/85 dark:bg-slate-900/85 backdrop-blur-sm border-b border-slate-200 dark:border-slate-800"
               style={{
                 width: headerDimensions.width || '100%',
                 paddingLeft: `${headerDimensions.left}px`,
@@ -191,7 +191,7 @@ const HabitGrid: React.FC<HabitGridProps> = ({
                   tooltipVisible={tooltipVisible}
                   showTooltip={showTooltip}
                   hideTooltip={hideTooltip}
-                  className={isMobile ? 'border-b border-slate-200' : 'divide-x divide-slate-400'}
+                  className={isMobile ? 'border-b border-slate-200 dark:border-slate-800' : 'divide-x divide-slate-400 dark:divide-slate-600'}
                 />
               </div>
 
@@ -208,12 +208,12 @@ const HabitGrid: React.FC<HabitGridProps> = ({
                   return (
                     <div
                       key={`${dayDate.getFullYear()}-${dayDate.getMonth()}-${day}`}
-                      className="grid gap-0 divide-x divide-slate-400"
+                      className="grid gap-0 divide-x divide-slate-400 dark:divide-slate-600"
                       style={{ gridTemplateColumns: isMobile ? `40px repeat(${Math.min(habits.length, 9)}, 30px)` : `150px repeat(${habits.length}, 1fr)` }}
                       role="row"
                     >
-                      <div className={`text-xs font-medium py-2 px-1 text-center ${isMobile ? 'bg-slate-100' : 'rounded-md'} ${
-                        isToday ? 'bg-indigo-100 text-indigo-700 font-bold' : 'text-slate-600'
+                      <div className={`text-xs font-medium py-2 px-1 text-center ${isMobile ? 'bg-slate-100 dark:bg-slate-800' : 'rounded-md'} ${
+                        isToday ? 'bg-indigo-100 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-300 font-bold' : 'text-slate-600 dark:text-slate-400'
                       } ${isMobile ? 'text-center' : 'text-left'}`} role="rowheader">
                         <div className={isPastDay ? 'line-through' : ''}>
                           {isMobile ? day : format(dayDate, 'EEEE do')}
@@ -229,10 +229,10 @@ const HabitGrid: React.FC<HabitGridProps> = ({
                               className={`
                                 ${isMobile ? 'w-[28px] h-[36px] touch-target-expand' : 'w-full h-10'} rounded-lg border transition-all duration-200 flex items-center justify-center hover:scale-105
                                 ${isCompleted
-                                  ? habit.type === 'critical' ? 'border-habit-critical-300 bg-habit-critical-50 text-habit-critical-700' :
-                                    habit.type === 'goal' ? 'border-habit-goal-300 bg-habit-goal-50 text-habit-goal-600' :
-                                    'border-habit-avoid-300 bg-habit-avoid-50 text-habit-avoid-600'
-                                  : 'border-slate-200 hover:border-slate-300 text-slate-400 hover:text-slate-600'
+                                  ? habit.type === 'critical' ? 'border-habit-critical-300 dark:border-habit-critical-600 bg-habit-critical-50 dark:bg-habit-critical-900/30 text-habit-critical-700 dark:text-habit-critical-400' :
+                                    habit.type === 'goal' ? 'border-habit-goal-300 dark:border-habit-goal-600 bg-habit-goal-50 dark:bg-habit-goal-900/30 text-habit-goal-600 dark:text-habit-goal-400' :
+                                    'border-habit-avoid-300 dark:border-habit-avoid-600 bg-habit-avoid-50 dark:bg-habit-avoid-900/30 text-habit-avoid-600 dark:text-habit-avoid-400'
+                                  : 'border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-400 dark:bg-slate-800'
                                 }
                               `}
                               aria-label={`${habit.name} for ${format(dayDate, 'MMM d')}: ${isCompleted ? 'completed' : 'not completed'}`}

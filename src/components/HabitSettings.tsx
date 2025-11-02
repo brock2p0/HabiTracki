@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Plus, Trash2, GripVertical, X, Download, Upload } from 'lucide-react';
 import type { Habit } from '../types';
+import ThemeToggle from './ThemeToggle';
 
 interface HabitSettingsProps {
   habits: Habit[];
@@ -100,10 +101,10 @@ const HabitSettings: React.FC<HabitSettingsProps> = ({ habits, onUpdateHabits, d
 
   const getTypeColor = (type: string) => {
     switch (type) {
-      case 'critical': return 'bg-habit-critical-50 text-habit-critical-700 border-habit-critical-200';
-      case 'goal': return 'bg-habit-goal-50 text-habit-goal-800 border-habit-goal-200';
-      case 'avoid': return 'bg-habit-avoid-50 text-habit-avoid-800 border-habit-avoid-200';
-      default: return 'bg-slate-100 text-slate-800 border-slate-200';
+      case 'critical': return 'bg-habit-critical-50 dark:bg-habit-critical-900/30 text-habit-critical-700 dark:text-habit-critical-400 border-habit-critical-200 dark:border-habit-critical-700';
+      case 'goal': return 'bg-habit-goal-50 dark:bg-habit-goal-900/30 text-habit-goal-800 dark:text-habit-goal-400 border-habit-goal-200 dark:border-habit-goal-700';
+      case 'avoid': return 'bg-habit-avoid-50 dark:bg-habit-avoid-900/30 text-habit-avoid-800 dark:text-habit-avoid-400 border-habit-avoid-200 dark:border-habit-avoid-700';
+      default: return 'bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 border-slate-200 dark:border-slate-700';
     }
   };
 
@@ -156,12 +157,14 @@ const HabitSettings: React.FC<HabitSettingsProps> = ({ habits, onUpdateHabits, d
   };
 
   return (
-    <section className={`bg-secondary-bg ${isMobile ? 'h-full overflow-y-auto' : 'rounded-2xl mb-6'} shadow-sm border border-slate-200 ${isMobile ? 'p-4' : 'p-6'}`} role="dialog" aria-labelledby="settings-heading" aria-modal={isMobile}>
+    <section className={`bg-secondary-bg dark:bg-slate-900 ${isMobile ? 'h-full overflow-y-auto' : 'rounded-2xl mb-6'} shadow-sm border border-slate-200 dark:border-slate-800 ${isMobile ? 'p-4' : 'p-6'}`} role="dialog" aria-labelledby="settings-heading" aria-modal={isMobile}>
+      <ThemeToggle />
+
       <div className={`flex items-center justify-between ${isMobile ? 'mb-4' : 'mb-6'}`}>
-        <h2 id="settings-heading" className="text-xl font-semibold text-slate-800">Customize Habits</h2>
+        <h2 id="settings-heading" className="text-xl font-semibold text-slate-800 dark:text-slate-200">Customize Habits</h2>
         <button
           onClick={onClose}
-          className="p-2 text-slate-500 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition-colors"
+          className="p-2 text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
           aria-label="Close habit settings"
         >
           <X className="w-5 h-5" />
@@ -172,7 +175,7 @@ const HabitSettings: React.FC<HabitSettingsProps> = ({ habits, onUpdateHabits, d
         {editingHabits.map((habit, index) => (
           <div
             key={habit.id} 
-            className="p-3 bg-white rounded-lg transition-all duration-200" 
+            className="p-3 bg-white dark:bg-slate-800 rounded-lg transition-all duration-200 border border-transparent dark:border-slate-700" 
             role="listitem"
             draggable="true"
             onDragStart={(e) => handleDragStart(e, index)}
@@ -182,7 +185,7 @@ const HabitSettings: React.FC<HabitSettingsProps> = ({ habits, onUpdateHabits, d
             onDragEnd={handleDragEnd}
           >
             <div className={`flex items-center gap-2 ${isMobile ? 'mb-2' : 'mb-3'}`}>
-              <button className="text-slate-400 hover:text-slate-600 cursor-grab active:cursor-grabbing" aria-label={`Reorder ${habit.name} habit`}>
+              <button className="text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 cursor-grab active:cursor-grabbing" aria-label={`Reorder ${habit.name} habit`}>
                 <GripVertical className="w-4 h-4" />
               </button>
               
@@ -190,7 +193,7 @@ const HabitSettings: React.FC<HabitSettingsProps> = ({ habits, onUpdateHabits, d
                 type="text"
                 value={habit.name}
                 onChange={(e) => updateHabit(index, 'name', e.target.value.toUpperCase())}
-                className={`flex-1 px-2 py-1 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent ${isMobile ? 'text-sm' : ''}`}
+                className={`flex-1 px-2 py-1 border border-slate-300 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent ${isMobile ? 'text-sm' : ''}`}
                 placeholder="Habit name..."
                 aria-label={`Habit ${index + 1} name`}
               />
@@ -199,7 +202,7 @@ const HabitSettings: React.FC<HabitSettingsProps> = ({ habits, onUpdateHabits, d
                 type="text"
                 value={habit.abbreviation || ''}
                 onChange={(e) => updateHabit(index, 'abbreviation', e.target.value.toUpperCase().substring(0, 2))}
-                className={`w-12 px-1 py-1 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-center ${isMobile ? 'text-xs' : 'text-sm'}`}
+                className={`w-12 px-1 py-1 border border-slate-300 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-center ${isMobile ? 'text-xs' : 'text-sm'}`}
                 placeholder="AB"
                 maxLength={2}
                 aria-label={`Habit ${index + 1} abbreviation`}
@@ -224,7 +227,7 @@ const HabitSettings: React.FC<HabitSettingsProps> = ({ habits, onUpdateHabits, d
                   max="10"
                   value={habit.flameCount || 3}
                   onChange={(e) => updateHabit(index, 'flameCount', parseInt(e.target.value) || 3)}
-                  className="w-16 px-2 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-center"
+                  className="w-16 px-2 py-2 border border-slate-300 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-center"
                   aria-label={`Flame count for ${habit.name} habit`}
                   title="Number of flames for this habit"
                 />
@@ -232,7 +235,7 @@ const HabitSettings: React.FC<HabitSettingsProps> = ({ habits, onUpdateHabits, d
               
               <button
                 onClick={() => deleteHabit(index)}
-                className="p-2 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors"
+                className="p-2 text-red-500 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-colors"
                 aria-label={`Delete ${habit.name} habit`}
               >
                 <Trash2 className="w-4 h-4" />
@@ -242,7 +245,7 @@ const HabitSettings: React.FC<HabitSettingsProps> = ({ habits, onUpdateHabits, d
             <textarea
               value={habit.description || ''}
               onChange={(e) => updateHabit(index, 'description', e.target.value)}
-              className={`w-full px-2 py-1 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent resize-y ${isMobile ? 'text-xs' : 'text-sm'}`}
+              className={`w-full px-2 py-1 border border-slate-300 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-200 dark:placeholder-slate-500 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent resize-y ${isMobile ? 'text-xs' : 'text-sm'}`}
               placeholder="Describe what this habit means to you and how you define completion..."
               rows={isMobile ? 1 : 2}
               maxLength={300}
@@ -254,7 +257,7 @@ const HabitSettings: React.FC<HabitSettingsProps> = ({ habits, onUpdateHabits, d
 
       <button
         onClick={addHabit}
-        className={`w-full flex items-center justify-center gap-2 ${isMobile ? 'p-2' : 'p-3'} border-2 border-dashed border-slate-300 rounded-lg text-slate-600 hover:border-slate-400 hover:text-slate-800 transition-colors`}
+        className={`w-full flex items-center justify-center gap-2 ${isMobile ? 'p-2' : 'p-3'} border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-lg text-slate-600 dark:text-slate-400 hover:border-slate-400 dark:hover:border-slate-500 hover:text-slate-800 dark:hover:text-slate-200 transition-colors`}
         aria-label="Add new habit"
       >
         <Plus className="w-4 h-4" />
@@ -262,19 +265,19 @@ const HabitSettings: React.FC<HabitSettingsProps> = ({ habits, onUpdateHabits, d
       </button>
 
       {/* Import/Export Section */}
-      <div className={`${isMobile ? 'mt-4 pt-4' : 'mt-6 pt-6'} border-t border-slate-200`} role="region" aria-labelledby="data-management">
-        <h3 id="data-management" className="text-sm font-medium text-slate-700 mb-4">Data Management</h3>
+      <div className={`${isMobile ? 'mt-4 pt-4' : 'mt-6 pt-6'} border-t border-slate-200 dark:border-slate-700`} role="region" aria-labelledby="data-management">
+        <h3 id="data-management" className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-4">Data Management</h3>
         <div className={`flex gap-3 ${isMobile ? 'flex-col' : ''}`}>
           <button
             onClick={exportData}
-            className={`flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors ${isMobile ? 'justify-center' : ''}`}
+            className={`flex items-center gap-2 px-4 py-2 bg-indigo-600 dark:bg-indigo-500 text-white rounded-lg hover:bg-indigo-700 dark:hover:bg-indigo-600 transition-colors ${isMobile ? 'justify-center' : ''}`}
             aria-label="Export all habit data"
           >
             <Download className="w-4 h-4" />
             Export Data
           </button>
           
-          <label className={`flex items-center gap-2 px-4 py-2 bg-slate-600 text-white rounded-lg hover:bg-slate-700 transition-colors cursor-pointer ${isMobile ? 'justify-center' : ''}`}>
+          <label className={`flex items-center gap-2 px-4 py-2 bg-slate-600 dark:bg-slate-700 text-white rounded-lg hover:bg-slate-700 dark:hover:bg-slate-600 transition-colors cursor-pointer ${isMobile ? 'justify-center' : ''}`}>
             <Upload className="w-4 h-4" />
             Import Data
             <input
@@ -286,15 +289,15 @@ const HabitSettings: React.FC<HabitSettingsProps> = ({ habits, onUpdateHabits, d
             />
           </label>
         </div>
-        <p className={`text-xs text-slate-500 mt-2 ${isMobile ? 'text-center' : ''}`}>
+        <p className={`text-xs text-slate-500 dark:text-slate-400 mt-2 ${isMobile ? 'text-center' : ''}`}>
           Export your data to backup or transfer to another device. Import previously exported data to restore your habits and progress.
         </p>
       </div>
 
       {/* Column Display Mode Setting - Mobile Only */}
       {isMobile && (
-        <div className="mt-4 pt-4 border-t border-slate-200" role="region" aria-labelledby="display-mode">
-          <h3 id="display-mode" className="text-sm font-medium text-slate-700 mb-3">Column Display Mode</h3>
+        <div className="mt-4 pt-4 border-t border-slate-200 dark:border-slate-700" role="region" aria-labelledby="display-mode">
+          <h3 id="display-mode" className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-3">Column Display Mode</h3>
           <div className="space-y-2">
             <label className="flex items-center gap-2">
               <input
@@ -305,8 +308,8 @@ const HabitSettings: React.FC<HabitSettingsProps> = ({ habits, onUpdateHabits, d
                 className="text-indigo-600 focus:ring-indigo-500"
               />
               <div>
-                <div className="text-sm font-medium">Compact View</div>
-                <div className="text-xs text-slate-500">Show all habits, tighter touch targets</div>
+                <div className="text-sm font-medium dark:text-slate-200">Compact View</div>
+                <div className="text-xs text-slate-500 dark:text-slate-400">Show all habits, tighter touch targets</div>
               </div>
             </label>
             <label className="flex items-center gap-2 opacity-50">
@@ -318,39 +321,39 @@ const HabitSettings: React.FC<HabitSettingsProps> = ({ habits, onUpdateHabits, d
                 className="text-indigo-600 focus:ring-indigo-500"
               />
               <div>
-                <div className="text-sm font-medium">Comfortable View</div>
-                <div className="text-xs text-slate-500">Premium touch targets, horizontal scroll (Coming Soon)</div>
+                <div className="text-sm font-medium dark:text-slate-200">Comfortable View</div>
+                <div className="text-xs text-slate-500 dark:text-slate-400">Premium touch targets, horizontal scroll (Coming Soon)</div>
               </div>
             </label>
           </div>
         </div>
       )}
 
-      <div className={`${isMobile ? 'mt-4' : 'mt-6'} p-4 bg-slate-50 rounded-lg`} role="region" aria-labelledby="habit-types-info">
-        <h3 id="habit-types-info" className="text-sm font-medium text-slate-700 mb-2">Habit Types</h3>
+      <div className={`${isMobile ? 'mt-4' : 'mt-6'} p-4 bg-slate-50 dark:bg-slate-800 rounded-lg`} role="region" aria-labelledby="habit-types-info">
+        <h3 id="habit-types-info" className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Habit Types</h3>
         <div className="space-y-2 text-xs">
           <div className="flex items-center gap-2">
             <div className="w-3 h-3 bg-habit-critical-500 rounded-full"></div>
-            <span><strong>Critical:</strong> Essential daily habits</span>
+            <span className="dark:text-slate-300"><strong>Critical:</strong> Essential daily habits</span>
           </div>
           <div className="flex items-center gap-2">
             <div className="w-3 h-3 bg-habit-goal-500 rounded-full"></div>
-            <span><strong>Goal:</strong> Positive habits to build</span>
+            <span className="dark:text-slate-300"><strong>Goal:</strong> Positive habits to build</span>
           </div>
           <div className="flex items-center gap-2">
             <div className="w-3 h-3 bg-habit-avoid-500 rounded-full"></div>
-            <span><strong>Avoid:</strong> Habits to minimize</span>
+            <span className="dark:text-slate-300"><strong>Avoid:</strong> Habits to minimize</span>
           </div>
           {!isMobile && (
-            <div className="flex items-center gap-2 mt-3 pt-2 border-t border-slate-300">
+            <div className="flex items-center gap-2 mt-3 pt-2 border-t border-slate-300 dark:border-slate-600">
               <span className="text-orange-500">🔥</span>
-              <span><strong>Flame Count:</strong> Number of flames each habit can earn (1-10)</span>
+              <span className="dark:text-slate-300"><strong>Flame Count:</strong> Number of flames each habit can earn (1-10)</span>
             </div>
           )}
           {isMobile && (
-            <div className="flex items-center gap-2 mt-3 pt-2 border-t border-slate-300">
+            <div className="flex items-center gap-2 mt-3 pt-2 border-t border-slate-300 dark:border-slate-600">
               <span className="text-indigo-500">AB</span>
-              <span><strong>Abbreviation:</strong> 2-letter code shown in mobile grid headers</span>
+              <span className="dark:text-slate-300"><strong>Abbreviation:</strong> 2-letter code shown in mobile grid headers</span>
             </div>
           )}
         </div>

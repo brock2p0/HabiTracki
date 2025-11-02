@@ -22,10 +22,10 @@ const MonthlyGoals: React.FC<MonthlyGoalsProps> = ({ goals, completedGoals, onUp
   };
 
   return (
-    <section className="bg-secondary-bg rounded-2xl shadow-sm border border-slate-200 p-6" aria-labelledby="goals-heading">
+    <section className="bg-secondary-bg dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 p-6" aria-labelledby="goals-heading">
       <div className="flex items-center gap-2 mb-6">
-        <Target className="w-5 h-5 text-indigo-600" />
-        <h2 id="goals-heading" className="text-xl font-semibold text-slate-800">Monthly Goals</h2>
+        <Target className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+        <h2 id="goals-heading" className="text-xl font-semibold text-slate-800 dark:text-slate-200">Monthly Goals</h2>
       </div>
 
       <div className="space-y-4" role="list" aria-label="Monthly goals list">
@@ -37,7 +37,7 @@ const MonthlyGoals: React.FC<MonthlyGoalsProps> = ({ goals, completedGoals, onUp
                 w-6 h-6 rounded-md border-2 flex items-center justify-center transition-all duration-200
                 ${completedGoals[index]
                   ? 'bg-emerald-500 border-emerald-500 text-white'
-                  : 'border-slate-300 hover:border-slate-400'
+                  : 'border-slate-300 dark:border-slate-600 hover:border-slate-400 dark:hover:border-slate-500'
                 }
               `}
               aria-label={`Mark goal ${index + 1} as ${completedGoals[index] ? 'incomplete' : 'complete'}`}
@@ -52,8 +52,8 @@ const MonthlyGoals: React.FC<MonthlyGoalsProps> = ({ goals, completedGoals, onUp
               onChange={(e) => handleGoalChange(index, e.target.value)}
               placeholder={`Goal ${index + 1}...`}
               className={`
-                flex-1 px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all
-                ${completedGoals[index] ? 'line-through text-slate-500 bg-slate-50' : ''}
+                flex-1 px-3 py-2 border border-slate-300 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:placeholder-slate-500 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all
+                ${completedGoals[index] ? 'line-through text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-800/50' : ''}
               `}
               maxLength={100}
               aria-label={`Goal ${index + 1} text input`}
@@ -63,16 +63,16 @@ const MonthlyGoals: React.FC<MonthlyGoalsProps> = ({ goals, completedGoals, onUp
       </div>
 
       {/* Progress Summary */}
-      <div className="mt-6 pt-4 border-t border-slate-200" role="region" aria-labelledby="goals-progress">
+      <div className="mt-6 pt-4 border-t border-slate-200 dark:border-slate-700" role="region" aria-labelledby="goals-progress">
         <div className="flex items-center justify-between text-sm">
-          <span id="goals-progress" className="text-slate-600">Progress</span>
-          <span className="font-medium text-slate-800">
+          <span id="goals-progress" className="text-slate-600 dark:text-slate-400">Progress</span>
+          <span className="font-medium text-slate-800 dark:text-slate-200">
             {completedGoals.filter(Boolean).length}/3 goals completed
           </span>
         </div>
-        <div className="mt-2 w-full bg-slate-200 rounded-full h-2" role="progressbar" aria-valuenow={(completedGoals.filter(Boolean).length / 3) * 100} aria-valuemin={0} aria-valuemax={100} aria-label="Overall goals completion progress">
+        <div className="mt-2 w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2" role="progressbar" aria-valuenow={(completedGoals.filter(Boolean).length / 3) * 100} aria-valuemin={0} aria-valuemax={100} aria-label="Overall goals completion progress">
           <div 
-            className="bg-indigo-500 h-2 rounded-full transition-all duration-300"
+            className="bg-indigo-500 dark:bg-indigo-400 h-2 rounded-full transition-all duration-300"
             style={{ width: `${(completedGoals.filter(Boolean).length / 3) * 100}%` }}
           ></div>
         </div>

@@ -1,5 +1,6 @@
 import React from 'react';
 import { Smile, TrendingUp } from 'lucide-react';
+import { useTheme } from '../contexts/ThemeContext';
 
 interface MoodTrackerProps {
   currentDate: Date;
@@ -14,6 +15,7 @@ const MoodTracker: React.FC<MoodTrackerProps> = ({
   getDayData,
   updateMood
 }) => {
+  const { isDarkMode } = useTheme();
   const getMoodData = () => {
     const moodData = [];
     for (let day = 1; day <= daysInMonth; day++) {
@@ -53,24 +55,24 @@ const MoodTracker: React.FC<MoodTrackerProps> = ({
   const averageMood = getAverageMood();
 
   return (
-    <section className="bg-secondary-bg rounded-2xl shadow-sm border border-slate-200 p-6" aria-labelledby="mood-heading">
+    <section className="bg-secondary-bg dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 p-6" aria-labelledby="mood-heading">
       <div className="flex items-center gap-2 mb-6">
-        <Smile className="w-5 h-5 text-indigo-600" />
-        <h2 id="mood-heading" className="text-xl font-semibold text-slate-800">Mood Tracking</h2>
+        <Smile className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+        <h2 id="mood-heading" className="text-xl font-semibold text-slate-800 dark:text-slate-200">Mood Tracking</h2>
       </div>
 
       {/* Mood Stats */}
       <div className="grid grid-cols-2 gap-4 mb-6" role="region" aria-labelledby="mood-stats">
         <h3 id="mood-stats" className="sr-only">Mood statistics</h3>
-        <div className="bg-white rounded-lg p-3">
-          <div className="text-xs text-slate-500 mb-1" id="avg-mood-label">Average Mood</div>
-          <div className="text-lg font-semibold text-slate-800">
+        <div className="bg-white dark:bg-slate-800 rounded-lg p-3">
+          <div className="text-xs text-slate-500 dark:text-slate-400 mb-1" id="avg-mood-label">Average Mood</div>
+          <div className="text-lg font-semibold text-slate-800 dark:text-slate-200">
             {averageMood > 0 ? `${averageMood}/5` : '--'}
           </div>
         </div>
-        <div className="bg-white rounded-lg p-3">
-          <div className="text-xs text-slate-500 mb-1" id="days-tracked-label">Days Tracked</div>
-          <div className="text-lg font-semibold text-slate-800">
+        <div className="bg-white dark:bg-slate-800 rounded-lg p-3">
+          <div className="text-xs text-slate-500 dark:text-slate-400 mb-1" id="days-tracked-label">Days Tracked</div>
+          <div className="text-lg font-semibold text-slate-800 dark:text-slate-200">
             {getMoodData().length}/{daysInMonth}
           </div>
         </div>
@@ -91,7 +93,7 @@ const MoodTracker: React.FC<MoodTrackerProps> = ({
                   y1={140 - ((rating - 1) / 4) * 120} 
                   x2="280" 
                   y2={140 - ((rating - 1) / 4) * 120} 
-                  stroke="#e2e8f0" 
+                  stroke={isDarkMode ? '#334155' : '#e2e8f0'} 
                   strokeWidth="1"
                 />
                 <text 
@@ -99,7 +101,7 @@ const MoodTracker: React.FC<MoodTrackerProps> = ({
                   y={145 - ((rating - 1) / 4) * 120} 
                   fontSize="10" 
                   textAnchor="end"
-                  fill="#64748b"
+                  fill={isDarkMode ? '#94a3b8' : '#64748b'}
                 >
                   {rating}
                 </text>
@@ -113,7 +115,7 @@ const MoodTracker: React.FC<MoodTrackerProps> = ({
                 y1={140 - ((averageMood - 1) / 4) * 120}
                 x2="280"
                 y2={140 - ((averageMood - 1) / 4) * 120}
-                stroke="#f59e0b"
+                stroke={isDarkMode ? '#fbbf24' : '#f59e0b'}
                 strokeWidth="1"
                 strokeDasharray="4,4"
               />
@@ -124,7 +126,7 @@ const MoodTracker: React.FC<MoodTrackerProps> = ({
               <path
                 d={createMoodPath()}
                 fill="none"
-                stroke="#3b82f6"
+                stroke={isDarkMode ? '#60a5fa' : '#3b82f6'}
                 strokeWidth="2"
               />
             )}
@@ -136,7 +138,7 @@ const MoodTracker: React.FC<MoodTrackerProps> = ({
                 cx={20 + (point.day / daysInMonth) * 260}
                 cy={140 - ((point.rating - 1) / 4) * 120}
                 r="4"
-                fill="#3b82f6"
+                fill={isDarkMode ? '#60a5fa' : '#3b82f6'}
                 className="hover:r-6 transition-all cursor-pointer"
               />
             ))}
@@ -146,11 +148,11 @@ const MoodTracker: React.FC<MoodTrackerProps> = ({
 
       {/* Mood Input Grid */}
       <div className="space-y-2" role="region" aria-labelledby="mood-input-heading">
-        <h3 id="mood-input-heading" className="text-sm font-medium text-slate-600">Daily Mood Rating</h3>
+        <h3 id="mood-input-heading" className="text-sm font-medium text-slate-600 dark:text-slate-400">Daily Mood Rating</h3>
         <div className="grid gap-1" style={{ gridTemplateColumns: `repeat(${Math.min(daysInMonth, 10)}, 1fr)` }} role="grid" aria-label="Daily mood rating input">
           {Array.from({ length: Math.min(daysInMonth, 10) }, (_, i) => i + 1).map(day => (
             <div key={day} className="text-center" role="gridcell">
-              <div className="text-xs text-slate-500 mb-1">{day}</div>
+              <div className="text-xs text-slate-500 dark:text-slate-400 mb-1">{day}</div>
               <input
                 type="number"
                 step="1"
@@ -158,7 +160,7 @@ const MoodTracker: React.FC<MoodTrackerProps> = ({
                 max="5"
                 value={getDayData(day).mood || ''}
                 onChange={(e) => updateMood(day, parseInt(e.target.value) || 0)}
-                className="w-full text-xs text-center border border-slate-300 rounded p-1 focus:ring-1 focus:ring-indigo-500 focus:border-transparent"
+                className="w-full text-xs text-center border border-slate-300 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-200 rounded p-1 focus:ring-1 focus:ring-indigo-500 focus:border-transparent"
                 placeholder="0"
                 aria-label={`Mood rating for day ${day}`}
               />
@@ -171,7 +173,7 @@ const MoodTracker: React.FC<MoodTrackerProps> = ({
             <div className="grid gap-1 mt-2" style={{ gridTemplateColumns: `repeat(${Math.min(daysInMonth - 10, 10)}, 1fr)` }} role="grid" aria-label="Daily mood rating input continued">
               {Array.from({ length: Math.min(daysInMonth - 10, 10) }, (_, i) => i + 11).map(day => (
                 <div key={day} className="text-center" role="gridcell">
-                  <div className="text-xs text-slate-500 mb-1">{day}</div>
+                  <div className="text-xs text-slate-500 dark:text-slate-400 mb-1">{day}</div>
                   <input
                     type="number"
                     step="1"
@@ -179,7 +181,7 @@ const MoodTracker: React.FC<MoodTrackerProps> = ({
                     max="5"
                     value={getDayData(day).mood || ''}
                     onChange={(e) => updateMood(day, parseInt(e.target.value) || 0)}
-                    className="w-full text-xs text-center border border-slate-300 rounded p-1 focus:ring-1 focus:ring-indigo-500 focus:border-transparent"
+                    className="w-full text-xs text-center border border-slate-300 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-200 rounded p-1 focus:ring-1 focus:ring-indigo-500 focus:border-transparent"
                     placeholder="0"
                     aria-label={`Mood rating for day ${day}`}
                   />
@@ -191,7 +193,7 @@ const MoodTracker: React.FC<MoodTrackerProps> = ({
               <div className="grid gap-1 mt-2" style={{ gridTemplateColumns: `repeat(${daysInMonth - 20}, 1fr)` }} role="grid" aria-label="Daily mood rating input final section">
                 {Array.from({ length: daysInMonth - 20 }, (_, i) => i + 21).map(day => (
                   <div key={day} className="text-center" role="gridcell">
-                    <div className="text-xs text-slate-500 mb-1">{day}</div>
+                    <div className="text-xs text-slate-500 dark:text-slate-400 mb-1">{day}</div>
                     <input
                       type="number"
                       step="1"
@@ -199,7 +201,7 @@ const MoodTracker: React.FC<MoodTrackerProps> = ({
                       max="5"
                       value={getDayData(day).mood || ''}
                       onChange={(e) => updateMood(day, parseInt(e.target.value) || 0)}
-                      className="w-full text-xs text-center border border-slate-300 rounded p-1 focus:ring-1 focus:ring-indigo-500 focus:border-transparent"
+                      className="w-full text-xs text-center border border-slate-300 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-200 rounded p-1 focus:ring-1 focus:ring-indigo-500 focus:border-transparent"
                       placeholder="0"
                       aria-label={`Mood rating for day ${day}`}
                     />
