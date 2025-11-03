@@ -10,7 +10,8 @@ export interface Habit {
 export interface DayData {
   moment?: string;
   habits?: { [habitId: string]: boolean | number };
-  sleep?: number;
+  sleepQuality?: number;
+  sleepHours?: number;
   mood?: number;
 }
 

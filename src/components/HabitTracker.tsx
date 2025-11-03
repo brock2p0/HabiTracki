@@ -4,8 +4,7 @@ import { format, getDaysInMonth, startOfMonth, getDay, startOfWeek, addDays } fr
 import CalendarGrid from './CalendarGrid';
 import HabitGrid from './HabitGrid';
 import MonthlyGoals from './MonthlyGoals';
-import SleepTracker from './SleepTracker';
-import MoodTracker from './MoodTracker';
+import SleepMoodTracker from './SleepMoodTracker';
 import HabitSettings from './HabitSettings';
 import { useHabitData } from '../hooks/useHabitData';
 import type { Habit } from '../types';
@@ -55,8 +54,7 @@ const HabitTracker: React.FC = () => {
     { id: 'habits', label: 'Daily Habits', icon: CheckSquare },
     { id: 'moments', label: 'Memorable Moments', icon: Calendar },
     { id: 'goals', label: 'Monthly Goals', icon: Target },
-    { id: 'sleep', label: 'Sleep Tracking', icon: Moon },
-    { id: 'mood', label: 'Mood Tracking', icon: Smile }
+    { id: 'sleepmood', label: 'Sleep & Mood', icon: Moon }
   ];
 
   const navigateMonth = (direction: 'prev' | 'next') => {
@@ -97,11 +95,14 @@ const HabitTracker: React.FC = () => {
     updateData(newData);
   };
 
-  const updateSleep = (day: number, value: number) => {
+  const updateSleepQuality = (day: number, quality: number, hours?: number) => {
     const newData = { ...data };
     if (!newData[monthKey]) newData[monthKey] = {};
     if (!newData[monthKey][day]) newData[monthKey][day] = {};
-    newData[monthKey][day].sleep = value;
+    newData[monthKey][day].sleepQuality = quality;
+    if (hours !== undefined) {
+      newData[monthKey][day].sleepHours = hours;
+    }
     updateData(newData);
   };
 
@@ -169,22 +170,16 @@ const HabitTracker: React.FC = () => {
             onUpdateGoals={updateGoalsCompletion}
           />
         );
-      case 'sleep':
+      case 'sleepmood':
         return (
-          <SleepTracker
+          <SleepMoodTracker
             currentDate={currentDate}
             daysInMonth={daysInMonth}
             getDayData={getDayData}
-            updateSleep={updateSleep}
-          />
-        );
-      case 'mood':
-        return (
-          <MoodTracker
-            currentDate={currentDate}
-            daysInMonth={daysInMonth}
-            getDayData={getDayData}
+            updateSleepQuality={updateSleepQuality}
             updateMood={updateMood}
+            viewMode={viewMode}
+            currentWeekStart={currentWeekStart}
           />
         );
       default:
