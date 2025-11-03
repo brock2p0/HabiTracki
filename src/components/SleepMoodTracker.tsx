@@ -190,31 +190,31 @@ const SleepMoodTracker: React.FC<SleepMoodTrackerProps> = ({
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-2 gap-4 mb-6">
-        <div className="bg-white dark:bg-slate-800 rounded-lg p-3">
-          <div className="text-xs text-slate-500 dark:text-slate-400 mb-1">Avg Sleep</div>
-          <div className="text-sm font-semibold text-slate-800 dark:text-slate-200">
+      <div className="grid grid-cols-2 gap-2 md:gap-4 mb-3 md:mb-6">
+        <div className="bg-white dark:bg-slate-800 rounded-lg p-2 md:p-3">
+          <div className="text-[10px] md:text-xs text-slate-500 dark:text-slate-400 mb-0.5 md:mb-1">Avg Sleep</div>
+          <div className="text-xs md:text-sm font-semibold text-slate-800 dark:text-slate-200">
             This Week: {avgSleepWeek > 0 ? `${getEmoji(avgSleepWeek)} ${avgSleepWeek}/5` : '--'}
           </div>
-          <div className="text-sm font-semibold text-slate-800 dark:text-slate-200 mt-1">
+          <div className="text-xs md:text-sm font-semibold text-slate-800 dark:text-slate-200 mt-0.5 md:mt-1">
             This Month: {avgSleepMonth > 0 ? `${getEmoji(avgSleepMonth)} ${avgSleepMonth}/5` : '--'}
           </div>
         </div>
-        <div className="bg-white dark:bg-slate-800 rounded-lg p-3">
-          <div className="text-xs text-slate-500 dark:text-slate-400 mb-1">Avg Mood</div>
-          <div className="text-sm font-semibold text-slate-800 dark:text-slate-200">
+        <div className="bg-white dark:bg-slate-800 rounded-lg p-2 md:p-3">
+          <div className="text-[10px] md:text-xs text-slate-500 dark:text-slate-400 mb-0.5 md:mb-1">Avg Mood</div>
+          <div className="text-xs md:text-sm font-semibold text-slate-800 dark:text-slate-200">
             This Week: {avgMoodWeek > 0 ? `${getEmoji(avgMoodWeek)} ${avgMoodWeek}/5` : '--'}
           </div>
-          <div className="text-sm font-semibold text-slate-800 dark:text-slate-200 mt-1">
+          <div className="text-xs md:text-sm font-semibold text-slate-800 dark:text-slate-200 mt-0.5 md:mt-1">
             This Month: {avgMoodMonth > 0 ? `${getEmoji(avgMoodMonth)} ${avgMoodMonth}/5` : '--'}
           </div>
         </div>
       </div>
 
       {/* Chart */}
-      <div className="mb-6">
-        <div className="relative bg-white dark:bg-slate-800 rounded-lg p-6">
-          <svg width="750" height="220" viewBox="0 0 750 220" className="w-full h-auto" preserveAspectRatio="xMidYMid meet">
+      <div className="mb-6 h-[50vh] md:h-auto">
+        <div className="relative bg-white dark:bg-slate-800 rounded-lg p-3 md:p-6 h-full md:h-auto">
+          <svg width="750" height="220" viewBox="0 0 750 220" className="w-full h-full md:h-auto" preserveAspectRatio="xMidYMid meet">
             {/* Grid lines */}
             {[0, 1, 2, 3, 4, 5].map(rating => (
               <g key={rating}>
@@ -229,7 +229,8 @@ const SleepMoodTracker: React.FC<SleepMoodTrackerProps> = ({
                 <text
                   x="30"
                   y={205 - (rating / 5) * 180}
-                  fontSize="12"
+                  fontSize="10"
+                  className="md:text-xs"
                   textAnchor="end"
                   fill={isDarkMode ? '#94a3b8' : '#64748b'}
                 >
@@ -267,7 +268,7 @@ const SleepMoodTracker: React.FC<SleepMoodTrackerProps> = ({
                     <text
                       x={x}
                       y={y - 12}
-                      fontSize="11"
+                      fontSize="10"
                       fontWeight="500"
                       fill={isDarkMode ? '#94a3b8' : '#6b7280'}
                       textAnchor="middle"
@@ -309,10 +310,10 @@ const SleepMoodTracker: React.FC<SleepMoodTrackerProps> = ({
 
             {/* Legend */}
             <g transform="translate(280, 210)">
-              <circle cx="0" cy="0" r="5" fill={isDarkMode ? '#22d3ee' : '#06b6d4'} />
-              <text x="12" y="5" fontSize="13" fontWeight="500" fill={isDarkMode ? '#cbd5e1' : '#475569'}>Sleep Quality</text>
-              <circle cx="130" cy="0" r="5" fill={isDarkMode ? '#fb923c' : '#f97316'} />
-              <text x="142" y="5" fontSize="13" fontWeight="500" fill={isDarkMode ? '#cbd5e1' : '#475569'}>Mood</text>
+              <circle cx="0" cy="0" r="4" fill={isDarkMode ? '#22d3ee' : '#06b6d4'} />
+              <text x="10" y="4" fontSize="11" fontWeight="500" fill={isDarkMode ? '#cbd5e1' : '#475569'}>Sleep Quality</text>
+              <circle cx="110" cy="0" r="4" fill={isDarkMode ? '#fb923c' : '#f97316'} />
+              <text x="120" y="4" fontSize="11" fontWeight="500" fill={isDarkMode ? '#cbd5e1' : '#475569'}>Mood</text>
             </g>
           </svg>
         </div>
