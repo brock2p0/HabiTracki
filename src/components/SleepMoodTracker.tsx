@@ -6,9 +6,9 @@ import { useTheme } from '../contexts/ThemeContext';
 interface SleepMoodTrackerProps {
   currentDate: Date;
   daysInMonth: number;
-  getDayData: (day: number) => any;
-  updateSleepQuality: (day: number, quality: number, hours?: number) => void;
-  updateMood: (day: number, value: number) => void;
+  getDayData: (day: number, date?: Date) => any;
+  updateSleepQuality: (day: number, quality: number, hours?: number, date?: Date) => void;
+  updateMood: (day: number, value: number, date?: Date) => void;
   viewMode: 'month' | 'week';
   currentWeekStart?: Date;
 }
@@ -41,7 +41,6 @@ const SleepMoodTracker: React.FC<SleepMoodTrackerProps> = ({
     let startDay = 1;
 
     if (viewMode === 'week' && currentWeekStart) {
-      const today = new Date();
       const currentMonth = currentDate.getMonth();
       const currentYear = currentDate.getFullYear();
 
@@ -51,7 +50,7 @@ const SleepMoodTracker: React.FC<SleepMoodTrackerProps> = ({
 
         if (date.getMonth() === currentMonth && date.getFullYear() === currentYear) {
           const day = date.getDate();
-          const dayData = getDayData(day);
+          const dayData = getDayData(day, date);
           if (dayData.sleepQuality !== undefined || dayData.mood !== undefined) {
             data.push({
               day,
@@ -66,7 +65,8 @@ const SleepMoodTracker: React.FC<SleepMoodTrackerProps> = ({
     }
 
     for (let day = startDay; day <= daysToShow; day++) {
-      const dayData = getDayData(day);
+      const date = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
+      const dayData = getDayData(day, date);
       if (dayData.sleepQuality !== undefined || dayData.mood !== undefined) {
         data.push({
           day,
@@ -147,7 +147,7 @@ const SleepMoodTracker: React.FC<SleepMoodTrackerProps> = ({
 
   const handleEdit = (date: Date) => {
     const day = date.getDate();
-    const dayData = getDayData(day);
+    const dayData = getDayData(day, date);
     setEditingDay(date);
     setEditValues({
       quality: dayData.sleepQuality || 0,
@@ -163,10 +163,10 @@ const SleepMoodTracker: React.FC<SleepMoodTrackerProps> = ({
     const hours = editValues.hours ? parseFloat(editValues.hours) : undefined;
 
     if (editValues.quality > 0) {
-      updateSleepQuality(day, editValues.quality, hours);
+      updateSleepQuality(day, editValues.quality, hours, editingDay);
     }
     if (editValues.mood > 0) {
-      updateMood(day, editValues.mood);
+      updateMood(day, editValues.mood, editingDay);
     }
 
     setEditingDay(null);
@@ -312,7 +312,7 @@ const SleepMoodTracker: React.FC<SleepMoodTrackerProps> = ({
         <h3 className="text-sm font-medium text-slate-600 dark:text-slate-400 mb-3">Recent Entries</h3>
         {getVisibleDays().map((date) => {
           const day = date.getDate();
-          const dayData = getDayData(day);
+          const dayData = getDayData(day, date);
           const isEditing = editingDay?.getTime() === date.getTime();
           const isToday = date.toDateString() === new Date().toDateString();
 

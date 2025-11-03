@@ -95,22 +95,34 @@ const HabitTracker: React.FC = () => {
     updateData(newData);
   };
 
-  const updateSleepQuality = (day: number, quality: number, hours?: number) => {
+  const updateSleepQuality = (day: number, quality: number, hours?: number, date?: Date) => {
     const newData = { ...data };
-    if (!newData[monthKey]) newData[monthKey] = {};
-    if (!newData[monthKey][day]) newData[monthKey][day] = {};
-    newData[monthKey][day].sleepQuality = quality;
+    let targetMonthKey = monthKey;
+    if (date) {
+      const year = date.getFullYear();
+      const month = date.getMonth();
+      targetMonthKey = `${year}-${month}`;
+    }
+    if (!newData[targetMonthKey]) newData[targetMonthKey] = {};
+    if (!newData[targetMonthKey][day]) newData[targetMonthKey][day] = {};
+    newData[targetMonthKey][day].sleepQuality = quality;
     if (hours !== undefined) {
-      newData[monthKey][day].sleepHours = hours;
+      newData[targetMonthKey][day].sleepHours = hours;
     }
     updateData(newData);
   };
 
-  const updateMood = (day: number, value: number) => {
+  const updateMood = (day: number, value: number, date?: Date) => {
     const newData = { ...data };
-    if (!newData[monthKey]) newData[monthKey] = {};
-    if (!newData[monthKey][day]) newData[monthKey][day] = {};
-    newData[monthKey][day].mood = value;
+    let targetMonthKey = monthKey;
+    if (date) {
+      const year = date.getFullYear();
+      const month = date.getMonth();
+      targetMonthKey = `${year}-${month}`;
+    }
+    if (!newData[targetMonthKey]) newData[targetMonthKey] = {};
+    if (!newData[targetMonthKey][day]) newData[targetMonthKey][day] = {};
+    newData[targetMonthKey][day].mood = value;
     updateData(newData);
   };
 
@@ -129,8 +141,14 @@ const HabitTracker: React.FC = () => {
     updateData(newData);
   };
 
-  const getDayData = (day: number) => {
-    return data[monthKey]?.[day] || {};
+  const getDayData = (day: number, date?: Date) => {
+    let targetMonthKey = monthKey;
+    if (date) {
+      const year = date.getFullYear();
+      const month = date.getMonth();
+      targetMonthKey = `${year}-${month}`;
+    }
+    return data[targetMonthKey]?.[day] || {};
   };
 
   const getGoals = () => {
