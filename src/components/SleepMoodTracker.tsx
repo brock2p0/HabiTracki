@@ -148,7 +148,11 @@ const SleepMoodTracker: React.FC<SleepMoodTrackerProps> = ({
   const handleEdit = (date: Date) => {
     const day = date.getDate();
     const dayData = getDayData(day, date);
-    setEditingDay(date);
+
+    const normalizedDate = new Date(date);
+    normalizedDate.setHours(0, 0, 0, 0);
+
+    setEditingDay(normalizedDate);
     setEditValues({
       quality: dayData.sleepQuality || 0,
       hours: dayData.sleepHours ? String(dayData.sleepHours) : '',
@@ -313,7 +317,10 @@ const SleepMoodTracker: React.FC<SleepMoodTrackerProps> = ({
         {getVisibleDays().map((date) => {
           const day = date.getDate();
           const dayData = getDayData(day, date);
-          const isEditing = editingDay?.getTime() === date.getTime();
+
+          const normalizedDate = new Date(date);
+          normalizedDate.setHours(0, 0, 0, 0);
+          const isEditing = editingDay?.getTime() === normalizedDate.getTime();
           const isToday = date.toDateString() === new Date().toDateString();
 
           return (
