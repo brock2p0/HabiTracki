@@ -122,8 +122,8 @@ const SleepMoodTracker: React.FC<SleepMoodTrackerProps> = ({
 
     if (relevantData.length < 2) return '';
 
-    const width = 280;
-    const height = 120;
+    const width = 700;
+    const height = 180;
     const maxValue = 5;
 
     const pathData = relevantData.map((point, index) => {
@@ -213,23 +213,23 @@ const SleepMoodTracker: React.FC<SleepMoodTrackerProps> = ({
 
       {/* Chart */}
       <div className="mb-6">
-        <div className="relative bg-white dark:bg-slate-800 rounded-lg p-4">
-          <svg width="300" height="140" className="mx-auto">
+        <div className="relative bg-white dark:bg-slate-800 rounded-lg p-6">
+          <svg width="750" height="220" viewBox="0 0 750 220" className="w-full h-auto" preserveAspectRatio="xMidYMid meet">
             {/* Grid lines */}
             {[0, 1, 2, 3, 4, 5].map(rating => (
               <g key={rating}>
                 <line
-                  x1="20"
-                  y1={140 - (rating / 5) * 120}
-                  x2="280"
-                  y2={140 - (rating / 5) * 120}
+                  x1="40"
+                  y1={200 - (rating / 5) * 180}
+                  x2="720"
+                  y2={200 - (rating / 5) * 180}
                   stroke={isDarkMode ? '#334155' : '#e2e8f0'}
                   strokeWidth="1"
                 />
                 <text
-                  x="15"
-                  y={145 - (rating / 5) * 120}
-                  fontSize="10"
+                  x="30"
+                  y={205 - (rating / 5) * 180}
+                  fontSize="12"
                   textAnchor="end"
                   fill={isDarkMode ? '#94a3b8' : '#64748b'}
                 >
@@ -244,31 +244,35 @@ const SleepMoodTracker: React.FC<SleepMoodTrackerProps> = ({
                 d={createLinePath([], 'sleep')}
                 fill="none"
                 stroke={isDarkMode ? '#22d3ee' : '#06b6d4'}
-                strokeWidth="2"
+                strokeWidth="3"
+                transform="translate(40, 20)"
               />
             )}
 
             {/* Sleep quality points with hour labels */}
             {sleepData.filter(d => d.sleepQuality).map(point => {
-              const x = 20 + (point.day / daysInMonth) * 260;
-              const y = 140 - ((point.sleepQuality || 0) / 5) * 120;
+              const x = 40 + (point.day / daysInMonth) * 700;
+              const y = 200 - ((point.sleepQuality || 0) / 5) * 180;
               return (
                 <g key={`sleep-${point.day}`}>
                   <circle
                     cx={x}
                     cy={y}
-                    r="4"
+                    r="5"
                     fill={isDarkMode ? '#22d3ee' : '#06b6d4'}
+                    stroke={isDarkMode ? '#0e7490' : '#0891b2'}
+                    strokeWidth="2"
                   />
                   {point.sleepHours && (
                     <text
                       x={x}
-                      y={y - 10}
-                      fontSize="10"
+                      y={y - 12}
+                      fontSize="11"
+                      fontWeight="500"
                       fill={isDarkMode ? '#94a3b8' : '#6b7280'}
                       textAnchor="middle"
                     >
-                      {point.sleepHours}
+                      {point.sleepHours}h
                     </text>
                   )}
                 </g>
@@ -281,31 +285,34 @@ const SleepMoodTracker: React.FC<SleepMoodTrackerProps> = ({
                 d={createLinePath([], 'mood')}
                 fill="none"
                 stroke={isDarkMode ? '#fb923c' : '#f97316'}
-                strokeWidth="2"
+                strokeWidth="3"
+                transform="translate(40, 20)"
               />
             )}
 
             {/* Mood points */}
             {sleepData.filter(d => d.mood).map(point => {
-              const x = 20 + (point.day / daysInMonth) * 260;
-              const y = 140 - ((point.mood || 0) / 5) * 120;
+              const x = 40 + (point.day / daysInMonth) * 700;
+              const y = 200 - ((point.mood || 0) / 5) * 180;
               return (
                 <circle
                   key={`mood-${point.day}`}
                   cx={x}
                   cy={y}
-                  r="4"
+                  r="5"
                   fill={isDarkMode ? '#fb923c' : '#f97316'}
+                  stroke={isDarkMode ? '#c2410c' : '#ea580c'}
+                  strokeWidth="2"
                 />
               );
             })}
 
             {/* Legend */}
-            <g transform="translate(70, 135)">
-              <circle cx="0" cy="0" r="4" fill={isDarkMode ? '#22d3ee' : '#06b6d4'} />
-              <text x="10" y="4" fontSize="11" fill={isDarkMode ? '#cbd5e1' : '#475569'}>Sleep Quality</text>
-              <circle cx="100" cy="0" r="4" fill={isDarkMode ? '#fb923c' : '#f97316'} />
-              <text x="110" y="4" fontSize="11" fill={isDarkMode ? '#cbd5e1' : '#475569'}>Mood</text>
+            <g transform="translate(280, 210)">
+              <circle cx="0" cy="0" r="5" fill={isDarkMode ? '#22d3ee' : '#06b6d4'} />
+              <text x="12" y="5" fontSize="13" fontWeight="500" fill={isDarkMode ? '#cbd5e1' : '#475569'}>Sleep Quality</text>
+              <circle cx="130" cy="0" r="5" fill={isDarkMode ? '#fb923c' : '#f97316'} />
+              <text x="142" y="5" fontSize="13" fontWeight="500" fill={isDarkMode ? '#cbd5e1' : '#475569'}>Mood</text>
             </g>
           </svg>
         </div>
