@@ -177,6 +177,8 @@ const HabitTracker: React.FC = () => {
             daysInMonth={daysInMonth}
             getDayData={getDayData}
             updateMoment={updateMoment}
+            viewMode={viewMode}
+            currentWeekStart={currentWeekStart}
           />
         );
       case 'goals':
