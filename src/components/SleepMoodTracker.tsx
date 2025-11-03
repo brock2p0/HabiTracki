@@ -139,9 +139,9 @@ const SleepMoodTracker: React.FC<SleepMoodTrackerProps> = ({
   const getVisibleDays = () => {
     const today = new Date();
     return [
-      subDays(today, visibleDaysOffset + 2),
+      subDays(today, visibleDaysOffset),
       subDays(today, visibleDaysOffset + 1),
-      subDays(today, visibleDaysOffset)
+      subDays(today, visibleDaysOffset + 2)
     ];
   };
 
