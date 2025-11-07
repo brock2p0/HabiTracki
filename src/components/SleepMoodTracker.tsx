@@ -128,7 +128,15 @@ const SleepMoodTracker: React.FC<SleepMoodTrackerProps> = ({
 
     const pathData = relevantData.map((point, index) => {
       const value = type === 'sleep' ? point.sleepQuality : point.mood;
-      const x = (point.day / daysInMonth) * width;
+      let x;
+
+      if (viewMode === 'week' && relevantData.length > 0) {
+        const spacing = width / Math.max(relevantData.length - 1, 1);
+        x = index * spacing;
+      } else {
+        x = (point.day / daysInMonth) * width;
+      }
+
       const y = height - ((value || 0) / maxValue) * height;
       return `${index === 0 ? 'M' : 'L'} ${x} ${y}`;
     }).join(' ');
@@ -251,8 +259,16 @@ const SleepMoodTracker: React.FC<SleepMoodTrackerProps> = ({
             )}
 
             {/* Sleep quality points with hour labels */}
-            {sleepData.filter(d => d.sleepQuality).map(point => {
-              const x = 40 + (point.day / daysInMonth) * 700;
+            {sleepData.filter(d => d.sleepQuality).map((point, index, array) => {
+              let x;
+
+              if (viewMode === 'week' && array.length > 0) {
+                const spacing = 700 / Math.max(array.length - 1, 1);
+                x = 40 + index * spacing;
+              } else {
+                x = 40 + (point.day / daysInMonth) * 700;
+              }
+
               const y = 200 - ((point.sleepQuality || 0) / 5) * 180;
               return (
                 <g key={`sleep-${point.day}`}>
@@ -292,8 +308,16 @@ const SleepMoodTracker: React.FC<SleepMoodTrackerProps> = ({
             )}
 
             {/* Mood points */}
-            {sleepData.filter(d => d.mood).map(point => {
-              const x = 40 + (point.day / daysInMonth) * 700;
+            {sleepData.filter(d => d.mood).map((point, index, array) => {
+              let x;
+
+              if (viewMode === 'week' && array.length > 0) {
+                const spacing = 700 / Math.max(array.length - 1, 1);
+                x = 40 + index * spacing;
+              } else {
+                x = 40 + (point.day / daysInMonth) * 700;
+              }
+
               const y = 200 - ((point.mood || 0) / 5) * 180;
               return (
                 <circle
