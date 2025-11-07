@@ -229,32 +229,34 @@ const HabitTracker: React.FC = () => {
                     : `${format(currentWeekStart, 'MMM d')} - ${format(addDays(currentWeekStart, 6), 'MMM d, yyyy')}`
                   }
                 </h1>
-                <div className="flex gap-1 bg-slate-100 dark:bg-slate-800 rounded-lg p-1 mt-1 inline-flex">
-                  <button
-                    onClick={() => {
-                      setViewMode('month');
-                      const midWeek = addDays(currentWeekStart, 3);
-                      setCurrentDate(midWeek);
-                    }}
-                    className={`px-3 py-1 rounded text-xs font-medium transition-colors ${
-                      viewMode === 'month' ? 'bg-white dark:bg-slate-700 shadow-sm text-slate-800 dark:text-slate-200' : 'text-slate-600 dark:text-slate-400'
-                    }`}
-                  >
-                    Month
-                  </button>
-                  <button
-                    onClick={() => {
-                      const weekStart = startOfWeek(currentDate, { weekStartsOn: 0 });
-                      setCurrentWeekStart(weekStart);
-                      setViewMode('week');
-                    }}
-                    className={`px-3 py-1 rounded text-xs font-medium transition-colors ${
-                      viewMode === 'week' ? 'bg-white dark:bg-slate-700 shadow-sm text-slate-800 dark:text-slate-200' : 'text-slate-600 dark:text-slate-400'
-                    }`}
-                  >
-                    Week
-                  </button>
-                </div>
+                {activeTab !== 'goals' && (
+                  <div className="flex gap-1 bg-slate-100 dark:bg-slate-800 rounded-lg p-1 mt-1 inline-flex">
+                    <button
+                      onClick={() => {
+                        setViewMode('month');
+                        const midWeek = addDays(currentWeekStart, 3);
+                        setCurrentDate(midWeek);
+                      }}
+                      className={`px-3 py-1 rounded text-xs font-medium transition-colors ${
+                        viewMode === 'month' ? 'bg-white dark:bg-slate-700 shadow-sm text-slate-800 dark:text-slate-200' : 'text-slate-600 dark:text-slate-400'
+                      }`}
+                    >
+                      Month
+                    </button>
+                    <button
+                      onClick={() => {
+                        const weekStart = startOfWeek(currentDate, { weekStartsOn: 0 });
+                        setCurrentWeekStart(weekStart);
+                        setViewMode('week');
+                      }}
+                      className={`px-3 py-1 rounded text-xs font-medium transition-colors ${
+                        viewMode === 'week' ? 'bg-white dark:bg-slate-700 shadow-sm text-slate-800 dark:text-slate-200' : 'text-slate-600 dark:text-slate-400'
+                      }`}
+                    >
+                      Week
+                    </button>
+                  </div>
+                )}
               </div>
 
               <button
@@ -281,32 +283,34 @@ const HabitTracker: React.FC = () => {
               </div>
 
               <nav className="flex items-center gap-3" role="navigation" aria-label="Month navigation and settings">
-                <div className="flex gap-1 bg-slate-100 dark:bg-slate-800 rounded-lg p-1">
-                  <button
-                    onClick={() => {
-                      setViewMode('month');
-                      const midWeek = addDays(currentWeekStart, 3);
-                      setCurrentDate(midWeek);
-                    }}
-                    className={`px-3 py-1 rounded text-sm font-medium transition-colors ${
-                      viewMode === 'month' ? 'bg-white dark:bg-slate-700 shadow-sm text-slate-800 dark:text-slate-200' : 'text-slate-600 dark:text-slate-400'
-                    }`}
-                  >
-                    Month
-                  </button>
-                  <button
-                    onClick={() => {
-                      const weekStart = startOfWeek(currentDate, { weekStartsOn: 0 });
-                      setCurrentWeekStart(weekStart);
-                      setViewMode('week');
-                    }}
-                    className={`px-3 py-1 rounded text-sm font-medium transition-colors ${
-                      viewMode === 'week' ? 'bg-white dark:bg-slate-700 shadow-sm text-slate-800 dark:text-slate-200' : 'text-slate-600 dark:text-slate-400'
-                    }`}
-                  >
-                    Week
-                  </button>
-                </div>
+                {activeTab !== 'goals' && (
+                  <div className="flex gap-1 bg-slate-100 dark:bg-slate-800 rounded-lg p-1">
+                    <button
+                      onClick={() => {
+                        setViewMode('month');
+                        const midWeek = addDays(currentWeekStart, 3);
+                        setCurrentDate(midWeek);
+                      }}
+                      className={`px-3 py-1 rounded text-sm font-medium transition-colors ${
+                        viewMode === 'month' ? 'bg-white dark:bg-slate-700 shadow-sm text-slate-800 dark:text-slate-200' : 'text-slate-600 dark:text-slate-400'
+                      }`}
+                    >
+                      Month
+                    </button>
+                    <button
+                      onClick={() => {
+                        const weekStart = startOfWeek(currentDate, { weekStartsOn: 0 });
+                        setCurrentWeekStart(weekStart);
+                        setViewMode('week');
+                      }}
+                      className={`px-3 py-1 rounded text-sm font-medium transition-colors ${
+                        viewMode === 'week' ? 'bg-white dark:bg-slate-700 shadow-sm text-slate-800 dark:text-slate-200' : 'text-slate-600 dark:text-slate-400'
+                      }`}
+                    >
+                      Week
+                    </button>
+                  </div>
+                )}
                 <button
                   onClick={() => navigateMonth('prev')}
                   className="px-4 py-2 bg-indigo-600 dark:bg-indigo-500 text-white rounded-lg shadow-md hover:bg-indigo-700 dark:hover:bg-indigo-600 transition-colors"
