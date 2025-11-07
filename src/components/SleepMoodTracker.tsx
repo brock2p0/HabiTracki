@@ -220,7 +220,7 @@ const SleepMoodTracker: React.FC<SleepMoodTrackerProps> = ({
       </div>
 
       {/* Chart */}
-      <div className="mb-6 h-[50vh] md:h-auto">
+      <div className="mb-6 h-[420px] md:h-auto">
         <div className="relative bg-white dark:bg-slate-800 rounded-lg p-3 md:p-6 h-full md:h-auto">
           <svg width="750" height="220" viewBox="0 0 750 220" className="w-full h-full md:h-auto" preserveAspectRatio="xMidYMid meet">
             {/* Grid lines */}
@@ -237,8 +237,8 @@ const SleepMoodTracker: React.FC<SleepMoodTrackerProps> = ({
                 <text
                   x="30"
                   y={205 - (rating / 5) * 180}
-                  fontSize="10"
-                  className="md:text-xs"
+                  fontSize="16"
+                  className="text-sm md:text-xs"
                   textAnchor="end"
                   fill={isDarkMode ? '#94a3b8' : '#64748b'}
                 >
@@ -253,7 +253,8 @@ const SleepMoodTracker: React.FC<SleepMoodTrackerProps> = ({
                 d={createLinePath([], 'sleep')}
                 fill="none"
                 stroke={isDarkMode ? '#22d3ee' : '#06b6d4'}
-                strokeWidth="3"
+                strokeWidth="4"
+                className="md:stroke-[3]"
                 transform="translate(40, 20)"
               />
             )}
@@ -275,7 +276,8 @@ const SleepMoodTracker: React.FC<SleepMoodTrackerProps> = ({
                   <circle
                     cx={x}
                     cy={y}
-                    r="5"
+                    r="7"
+                    className="md:r-5"
                     fill={isDarkMode ? '#22d3ee' : '#06b6d4'}
                     stroke={isDarkMode ? '#0e7490' : '#0891b2'}
                     strokeWidth="2"
@@ -283,9 +285,10 @@ const SleepMoodTracker: React.FC<SleepMoodTrackerProps> = ({
                   {point.sleepHours && (
                     <text
                       x={x}
-                      y={y - 12}
-                      fontSize="10"
-                      fontWeight="500"
+                      y={y - 14}
+                      fontSize="15"
+                      className="text-sm md:text-xs"
+                      fontWeight="600"
                       fill={isDarkMode ? '#94a3b8' : '#6b7280'}
                       textAnchor="middle"
                     >
@@ -302,7 +305,8 @@ const SleepMoodTracker: React.FC<SleepMoodTrackerProps> = ({
                 d={createLinePath([], 'mood')}
                 fill="none"
                 stroke={isDarkMode ? '#fb923c' : '#f97316'}
-                strokeWidth="3"
+                strokeWidth="4"
+                className="md:stroke-[3]"
                 transform="translate(40, 20)"
               />
             )}
@@ -324,7 +328,8 @@ const SleepMoodTracker: React.FC<SleepMoodTrackerProps> = ({
                   key={`mood-${point.day}`}
                   cx={x}
                   cy={y}
-                  r="5"
+                  r="7"
+                  className="md:r-5"
                   fill={isDarkMode ? '#fb923c' : '#f97316'}
                   stroke={isDarkMode ? '#c2410c' : '#ea580c'}
                   strokeWidth="2"
@@ -334,10 +339,10 @@ const SleepMoodTracker: React.FC<SleepMoodTrackerProps> = ({
 
             {/* Legend */}
             <g transform="translate(280, 210)">
-              <circle cx="0" cy="0" r="4" fill={isDarkMode ? '#22d3ee' : '#06b6d4'} />
-              <text x="10" y="4" fontSize="11" fontWeight="500" fill={isDarkMode ? '#cbd5e1' : '#475569'}>Sleep Quality</text>
-              <circle cx="110" cy="0" r="4" fill={isDarkMode ? '#fb923c' : '#f97316'} />
-              <text x="120" y="4" fontSize="11" fontWeight="500" fill={isDarkMode ? '#cbd5e1' : '#475569'}>Mood</text>
+              <circle cx="0" cy="0" r="5" fill={isDarkMode ? '#22d3ee' : '#06b6d4'} />
+              <text x="10" y="5" fontSize="14" className="text-sm" fontWeight="600" fill={isDarkMode ? '#cbd5e1' : '#475569'}>Sleep Quality</text>
+              <circle cx="110" cy="0" r="5" fill={isDarkMode ? '#fb923c' : '#f97316'} />
+              <text x="120" y="5" fontSize="14" className="text-sm" fontWeight="600" fill={isDarkMode ? '#cbd5e1' : '#475569'}>Mood</text>
             </g>
           </svg>
         </div>
